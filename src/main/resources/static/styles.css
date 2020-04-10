@@ -1,0 +1,25 @@
+.navbar{
+    margin-bottom: 0;
+}
+
+.navbar-brand>img {
+  height: 100%;
+  width: auto;
+  margin-left: 10%;
+}
+
+.navbar-brand {
+  padding: 0px;
+}
+
+
+body {
+    margin-bottom:50px;
+}
+
+footer {
+    position: fixed;
+    height: 5%;
+    bottom: 0;
+    width: 100%;
+}
