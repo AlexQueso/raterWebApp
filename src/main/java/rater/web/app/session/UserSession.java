@@ -8,30 +8,26 @@ import java.util.HashMap;
 
 @Component
 @SessionScope
-public class User {
+public class UserSession {
 
     private boolean professor;
     private HashMap<String, JSONObject> studentReports;
     private HashMap<String, JSONObject> globalReports;
     private HashMap<String, JSONObject> individualReports;
 
-    public User(boolean professor) {
+    public UserSession(boolean professor) {
         this.professor = professor;
-        if (professor){
-            globalReports = new HashMap<>();
-            individualReports = new HashMap<>();
-        } else {
-            studentReports = new HashMap<>();
-        }
-    }
-
-    public User(){
-        this(false);
+        studentReports = new HashMap<>();
     }
 
     public boolean isProfessor(){
         return professor;
     }
+
+    public void setProfessor(boolean b){
+        professor = b;
+    }
+
 
     public HashMap<String, JSONObject> getStudentReports() {
         return studentReports;
@@ -43,6 +39,14 @@ public class User {
 
     public HashMap<String, JSONObject> getIndividualReports() {
         return individualReports;
+    }
+
+    public void setGlobalReports(HashMap<String, JSONObject> globalReports) {
+        this.globalReports = globalReports;
+    }
+
+    public void setIndividualReports(HashMap<String, JSONObject> individualReports) {
+        this.individualReports = individualReports;
     }
 
     public void addStudentReport(String name, JSONObject report){
