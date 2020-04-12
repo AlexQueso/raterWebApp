@@ -10,15 +10,11 @@ import java.util.HashMap;
 @SessionScope
 public class UserSession {
 
-    private boolean professor;
-    private HashMap<String, JSONObject> studentReports;
+    private boolean professor = true;
+    private boolean newUser = true;
+    private HashMap<String, JSONObject> studentReports = new HashMap<>();
     private HashMap<String, JSONObject> globalReports;
     private HashMap<String, JSONObject> individualReports;
-
-    public UserSession(boolean professor) {
-        this.professor = professor;
-        studentReports = new HashMap<>();
-    }
 
     public boolean isProfessor(){
         return professor;
@@ -27,7 +23,6 @@ public class UserSession {
     public void setProfessor(boolean b){
         professor = b;
     }
-
 
     public HashMap<String, JSONObject> getStudentReports() {
         return studentReports;
@@ -41,12 +36,24 @@ public class UserSession {
         return individualReports;
     }
 
+    public boolean isNewUser() {
+        return newUser;
+    }
+
+    public void setNewUser(boolean newUser) {
+        this.newUser = newUser;
+    }
+
     public void setGlobalReports(HashMap<String, JSONObject> globalReports) {
         this.globalReports = globalReports;
     }
 
     public void setIndividualReports(HashMap<String, JSONObject> individualReports) {
         this.individualReports = individualReports;
+    }
+
+    public void setStudentReports(HashMap<String, JSONObject> studentReports) {
+        this.studentReports = studentReports;
     }
 
     public void addStudentReport(String name, JSONObject report){

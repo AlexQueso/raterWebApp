@@ -1,15 +1,30 @@
 package rater.web.app.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import rater.web.app.services.AppService;
+import rater.web.app.services.LoginService;
 
 @Controller
 public class AppController {
 
+    public final AppService appService;
+
+    @Autowired
+    public AppController(AppService appService) {
+        this.appService = appService;
+    }
+
     @GetMapping("/")
     public String home(Model model){
+        appService.homeOverview();
+        if (userIsProfessor())
+            model.addAttribute("professor", true);
+        else
+            model.addAttribute("student", true);
         return "app";
     }
 
@@ -26,5 +41,9 @@ public class AppController {
     @GetMapping("/nueva-practica")
     public String newProject(Model model){
         return "";
+    }
+
+    public boolean userIsProfessor(){
+        return appService.userIsProfessor();
     }
 }

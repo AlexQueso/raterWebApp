@@ -13,9 +13,19 @@
         <a class="navbar-brand" href="https://urjc.es">
             <img src="/SVG/logoURJC.svg" alt="logo">
         </a>
+        {{#professor}}
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+                <span id="go-to-login" class="label label-danger navbar-right">Modo Profesor</span>
+            </div>
+        </div>
+
+        {{/professor}}
+        {{#student}}
         <div class="collapse navbar-collapse">
             <button id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</button>
         </div>
+        {{/student}}
     </nav>
 
     <!--BREADCRUMB-->
