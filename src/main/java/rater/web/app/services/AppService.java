@@ -22,8 +22,7 @@ public class AppService {
 
     public void homeOverview() {
         boolean b = userSession.isNewUser();
-        if (userSession.isNewUser())
-            userSession.setNewUser(false);
+
 
         //todo get projects from data base to show them up in the home page
         //return List<Project> practicas
