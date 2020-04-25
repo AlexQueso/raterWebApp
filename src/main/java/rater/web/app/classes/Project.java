@@ -23,6 +23,11 @@ public class Project {
         this.name = name;
     }
 
+    public Project(String name, File pathToDirectory) {
+        this.name = name;
+        this.pathToDirectory = pathToDirectory;
+    }
+
     public long getId() {
         return id;
     }
