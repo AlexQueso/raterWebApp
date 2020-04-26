@@ -33,15 +33,15 @@ public class AppService {
         //return List<Project> practicas
     }
 
-//    @PostConstruct
-//    public void initDataBase(){
-//        Project p1 = new Project("Práctica 1");
-//        Project p2 = new Project("Práctica 2");
-//        Project p3 = new Project("Práctica 3");
-//        Project p4 = new Project("Examen Final");
-//        projectRepository.save(p1);
-//        projectRepository.save(p1);
-//        projectRepository.save(p1);
-//        projectRepository.save(p1);
-//    }
+    @PostConstruct
+    public void initDataBase(){
+        Project p1 = new Project("Práctica 1");
+        Project p2 = new Project("Práctica 2");
+        Project p3 = new Project("Práctica 3");
+        Project p4 = new Project("Examen Final");
+        projectRepository.save(p1);
+        projectRepository.save(p2);
+        projectRepository.save(p3);
+        projectRepository.save(p4);
+    }
 }
