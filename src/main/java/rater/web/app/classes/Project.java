@@ -15,6 +15,7 @@ public class Project {
     private long id;
 
     private String name;
+    private String description;
     private File pathToDirectory;
 
     public Project(){}
@@ -23,8 +24,9 @@ public class Project {
         this.name = name;
     }
 
-    public Project(String name, File pathToDirectory) {
+    public Project(String name, String description, File pathToDirectory) {
         this.name = name;
+        this.description = description;
         this.pathToDirectory = pathToDirectory;
     }
 
@@ -50,6 +52,14 @@ public class Project {
 
     public void setPathToDirectory(File pathToDirectory) {
         this.pathToDirectory = pathToDirectory;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

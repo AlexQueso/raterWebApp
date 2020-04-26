@@ -8,6 +8,7 @@ import rater.web.app.session.UserSession;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class AppService {
@@ -25,12 +26,8 @@ public class AppService {
         return userSession.isProfessor();
     }
 
-    public void homeOverview() {
-        boolean b = userSession.isNewUser();
-
-
-        //todo get projects from data base to show them up in the home page
-        //return List<Project> practicas
+    public List<Project> homeOverview() {
+        return projectRepository.findAll();
     }
 
     @PostConstruct

@@ -38,7 +38,21 @@
 
     <!--CONTENT-->
     <div class="container">
-
+        <div class = "row">
+            {{#projects}}
+            <div class = "col-sm-4">
+                <div class="panel panel-default border-bottom">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{name}}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, fugiat nulla pariatu</p>
+                        <a href="/" class="btn btn-default" role="button">Corregir</a>
+                    </div>
+                </div>
+            </div>
+            {{/projects}}
+        </div>
     </div>
 
     <!--FOOTER-->
