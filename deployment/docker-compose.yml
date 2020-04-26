@@ -1,0 +1,22 @@
+version: '3'
+
+networks:
+    rater-web-net:
+
+services:
+
+    mysql-database:
+        container_name: rater-web-db
+        image: mysql:8.0.19
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        restart: always
+        ports:
+            - "0.0.0.0:3308:3306"
+        networks:
+            - rater-web-net
+        volumes:
+            - ./data:/var/lib/mysql
