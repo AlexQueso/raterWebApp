@@ -10,7 +10,7 @@ import java.util.HashMap;
 @SessionScope
 public class UserSession {
 
-    private boolean professor = true;
+    private boolean professor = false;
     private boolean newUser = true;
     private HashMap<String, JSONObject> studentReports = new HashMap<>();
     private HashMap<String, JSONObject> globalReports;
