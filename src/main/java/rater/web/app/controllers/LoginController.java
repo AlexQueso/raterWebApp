@@ -21,13 +21,13 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @PostMapping(value = "/signing_in")
+    @PostMapping(value = "/signing-in")
     public String signIn(Model model, @RequestParam String user, @RequestParam String password) {
         if (loginService.signInSuccessfully(user, password)){
             return Utils.redirectTo("/");
         }
 
-        return "login";
+        return Utils.redirectTo("/login");
     }
 
     @GetMapping("/log-out")
