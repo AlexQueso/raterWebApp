@@ -26,7 +26,7 @@ public class AppService {
         return userSession.isProfessor();
     }
 
-    public List<Project> homeOverview() {
+    public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
 

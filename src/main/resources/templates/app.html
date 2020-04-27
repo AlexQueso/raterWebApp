@@ -19,24 +19,26 @@
                 <span id="go-to-login" class="label label-danger navbar-right">Modo Profesor</span>
             </div>
         </div>
-
         {{/professor}}
         {{#student}}
         <div class="collapse navbar-collapse">
-            <button id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</button>
+            <a  role="button" href="/login" id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</a>
         </div>
         {{/student}}
     </nav>
 
     <!--BREADCRUMB-->
     <ol class="breadcrumb breadcrumb-arrow">
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Practica 1</a></li>
-        <li class="active"><span>Informe</span></li>
+        {{#breadcrumb-list}}
+        <li><a href="{{href}}">{{tag}}</a></li>
+        {{/breadcrumb-list}}
+        {{#breadcrumb-active}}
+        <li class="active"><span>{{tag}}</span></li>
+        {{/breadcrumb-active}}
     </ol>
 
-
-    <!--CONTENT-->
+    <!--PROJECTS OVERVIEW-->
+    {{#main}}
     <div class="container">
         <div class = "row">
             {{#projects}}
@@ -54,6 +56,17 @@
             {{/projects}}
         </div>
     </div>
+    {{/main}}
+
+    <!--LOGIN-->
+    {{#login}}
+
+    {{/login}}
+
+    <!--PROJECT-->
+    {{#project}}
+
+    {{/project}}
 
     <!--FOOTER-->
     <footer class="footer fixed-bottom">
