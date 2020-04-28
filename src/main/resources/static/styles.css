@@ -33,6 +33,11 @@ footer {
     margin-top: 18px;
     margin-bottom: 18px;
 }
+
+#new-project-btn {
+    /*line-height: 35px;*/
+    margin-right: 10px;
+}
 /*!button go-to-login*/
 
 /*breadcrumb*/

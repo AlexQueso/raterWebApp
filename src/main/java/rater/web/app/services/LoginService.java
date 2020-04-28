@@ -17,7 +17,7 @@ public class LoginService {
     }
 
     public boolean signInSuccessfully(String user, String password) {
-        if (user.equals("user") && password.equals("1234")){
+        if (user.equals("a") && password.equals("a")){
             userSession.setProfessor(true);
             userSession.setGlobalReports(new HashMap<>());
             userSession.setIndividualReports(new HashMap<>());

@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>URJC - EDA</title>
-    <link rel="stylesheet" href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/styles.css"/>
 </head>
 
 <body>
     <!--NAVBAR-->
     <nav class="navbar navbar-static-top navbar-inverse navbar-expand-lg">
-        <a class="navbar-brand" href="https://urjc.es">
+        <a class="navbar-brand" href="https://www.aulavirtual.urjc.es/">
             <img src="/SVG/logoURJC.svg" alt="logo">
         </a>
         {{#professor}}
-        <div class="collapse navbar-collapse">
+        <div class="text-right">
             <a role="button" href="/log-out" id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Log Out</a>
         </div>
         {{/professor}}
         {{#student}}
-        <div class="collapse navbar-collapse">
+        <div class="text-right">
             <a role="button" href="/login" id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</a>
         </div>
         {{/student}}
@@ -27,12 +27,21 @@
 
     <!--BREADCRUMB-->
     <ol class="breadcrumb breadcrumb-arrow">
-        {{#breadcrumb-list}}
-        <li><a href="{{href}}">{{tag}}</a></li>
-        {{/breadcrumb-list}}
-        {{#breadcrumb-active}}
-        <li class="active"><span>{{tag}}</span></li>
-        {{/breadcrumb-active}}
+        <div class="row">
+            <div class="col-xs-8 text-left">
+                {{#breadcrumb-list}}
+                <li><a href="{{href}}">{{tag}}</a></li>
+                {{/breadcrumb-list}}
+                <li class="active"><span>{{breadcrumb-active}}</span></li>
+            </div>
+            {{#new-project-btn}}
+            <div class="pull-right">
+                <div class="container-fluid">
+                    <a href="/nueva-practica" id="new-project-btn" class="btn btn-default btn-sm" role="button">Nueva Práctica</a>
+                </div>
+            </div>
+            {{/new-project-btn}}
+        </div>
     </ol>
 
     <!--PROJECTS OVERVIEW-->
@@ -46,8 +55,15 @@
                         <h3 class="panel-title">{{name}}</h3>
                     </div>
                     <div class="panel-body">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, fugiat nulla pariatu</p>
-                        <a href="/" class="btn btn-default" role="button">Corregir</a>
+                        <p>{{description}}</p>
+                        <div class="row">
+                            <div class="col-xs-4 col-xs-offset-7 text-right">
+                                <div class="container-fluid">
+                                    <a href="/practica/{{id}}" class="btn btn-default" role="button">Corregir</a>
+                                </div>
+                            </div>
+                        </div>
+<!--                        <a href="/practica/{{id}}" class="btn btn-default" role="button">Corregir</a>-->
                     </div>
                 </div>
             </div>
@@ -78,10 +94,10 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-xs-8 text-left">
+                                <div class="col-xs-6 text-left">
                                     <a class="btn btn-danger" href="/" role="button">Volver</a>
                                 </div>
-                                <div class="col-sx-4 text-right">
+                                <div class="col-sx-6 text-right">
                                     <div class="container-fluid">
                                         <button class="btn btn-default" type="submit">Sign In</button>
                                     </div>
@@ -98,9 +114,108 @@
     <!--PROJECT-->
     {{#project}}
     <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="panel border-bottom">
+                    <div class="panel heading">
+                        <h2>{{name}}</h2>
+                        <h4>{{description}}</h4>
+                    </div>
+                    <div class="panel-body">
+                        {{#professor}}
+                        <form  action="/rate-all-projects" method="post">
+                            <div class="form-group">
+                                <p>Corregir un conjunto de projectos</p>
+                                <br>
+                                <label>Selecciona directorio de proyectos</label>
+                                <input type="file">
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 text-left">
+                                    <a class="btn btn-danger" href="/delete-project/{{id}}" role="button">Borrar</a>
+                                </div>
+                                <div class="col-sx-6 text-right">
+                                    <div class="container-fluid">
+                                        <button type="submit" class="btn btn-default">Corregir todos</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        {{/professor}}
+                        {{#student}}
+                        <form  action="/rate-project" method="post">
+                            <div class="form-group">
+                                <p>Esta corrección se realizará de forma anónima y no será efectiva de cara a la correción oficial.
+                                La entrega de la práctica deberá realizarse a través del Aula Virtual.
+                                Cualquier librería no usada en clase puede provocar fallos de compilación.</p>
+                                <br>
 
+                                <label>Selecciona directorio raiz del proyecto</label>
+                                <input type="file">
+                                <p class="help-block">Formato zip</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-xs-offset-7 text-right">
+                                    <div class="container-fluid">
+                                        <button type="submit" class="btn btn-default text-right">Corregir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        {{/student}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {{/project}}
+
+    <!--NEW PROJECT-->
+    {{#new-project}}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-4">
+                <div class="panel border-bottom">
+                    {{#professor}}
+                    <div class="panel heading">
+                        <h3>Nueva Práctica</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form action="/crear-practica" method="post">
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" name="name" placeholder="Nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Descripción</label>
+                                <input type="text" class="form-control" name="description" placeholder="Descripción">
+                            </div>
+                            <div class="form-group">
+                                <label>Seleccione projecto de referencia</label>
+                                <input type="file" name="file" required>
+                                <p class="help-block">Formato zip</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-xs-offset-8 text-right">
+                                    <div class="container-fluid">
+                                        <button type="submit" class="btn btn-default text-right">Subir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {{/professor}}
+                    {{#student}}
+                    <div class="panel-heading">
+                        <h3>Volver al inicio</h3>
+                        <a href="/" class="btn btn-default" role="button">Volver</a>
+                    </div>
+                    {{/student}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/new-project}}
 
     <!--FOOTER-->
     <footer class="footer fixed-bottom">
@@ -109,7 +224,7 @@
         </div>
     </footer>
 
-    <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
-    <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>

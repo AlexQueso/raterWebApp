@@ -30,6 +30,12 @@ public class Project {
         this.pathToDirectory = pathToDirectory;
     }
 
+    public Project(String name, File pathToDirectory) {
+        this.name = name;
+        this.description = " ";
+        this.pathToDirectory = pathToDirectory;
+    }
+
     public long getId() {
         return id;
     }

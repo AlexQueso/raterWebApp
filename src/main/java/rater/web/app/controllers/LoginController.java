@@ -6,10 +6,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import rater.web.app.classes.Breadcrumb;
 import rater.web.app.services.LoginService;
 import rater.web.app.utils.Utils;
 
 import javax.servlet.http.HttpSession;
+import java.util.LinkedList;
 
 @Controller
 public class LoginController {
@@ -19,6 +21,18 @@ public class LoginController {
     @Autowired
     public LoginController(LoginService loginService) {
         this.loginService = loginService;
+    }
+
+    @GetMapping("/login")
+    public String goToLogIn(Model model){
+        model.addAttribute("login", true);
+
+        //breadcrumb
+        LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
+        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
+        model.addAttribute("breadcrumb-list", breadcrumbs);
+        model.addAttribute("breadcrumb-active", "Iniciar Sesión");
+        return "app";
     }
 
     @PostMapping(value = "/signing-in")
