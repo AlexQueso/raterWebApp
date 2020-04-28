@@ -89,15 +89,16 @@ public class AppController {
         return Utils.redirectTo("/");
     }
 
-    @PostMapping("/rate-project")
-    public String rateStudentProject(File file){
-        return "";
+    @PostMapping("/rate-project/{{id}}")
+    public String rateStudentProject(@PathVariable long id, File file){
+
+        return Utils.redirectTo("/");
     }
 
-    @PostMapping("/rate-all-projects")
-    public String rateAllProjects(File file){
+    @PostMapping("/rate-all-projects/{{id}}")
+    public String rateAllProjects(@PathVariable long id, File file){
 
-        return "";
+        return Utils.redirectTo("/");
     }
 
     @GetMapping("/delete-project/{id}")
