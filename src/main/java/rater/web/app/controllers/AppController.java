@@ -25,7 +25,7 @@ import java.util.List;
 @Controller
 public class AppController {
 
-    private static String UPLOADED_FOLDER = "C:\\Users\\aquem\\Desktop/";
+    private static String UPLOADED_FOLDER = "/home/alex/Desktop/projects/";
 
     public final AppService appService;
 
@@ -105,25 +105,18 @@ public class AppController {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
             return "redirect:uploadStatus";
         }
-        try {
-
-            // Get the file and save it somewhere
-            byte[] bytes = file.getBytes();
-            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
-            Files.write(path, bytes);
-
-            redirectAttributes.addFlashAttribute("message",
-                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Utils.redirectTo("/");
+        String studentProjectId = appService.uploadProject(id, file);
+        return Utils.redirectTo("/generating-report/" + id + "/" + studentProjectId);
     }
 
-    @PostMapping("/rate-all-projects/{id}")
-    public String rateAllProjects(@PathVariable long id, File file){
-
+    @PostMapping(value = "/rate-all-projects/{id}")
+    public String rateAllProjects(@PathVariable long id, @RequestParam("file") MultipartFile file,
+                                  RedirectAttributes redirectAttributes){
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
+            return "redirect:uploadStatus";
+        }
+        appService.uploadProject(id, file);
         return Utils.redirectTo("/");
     }
 

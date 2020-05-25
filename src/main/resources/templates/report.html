@@ -20,15 +20,27 @@
 
 <!--BREADCRUMB-->
 <ol class="breadcrumb breadcrumb-arrow">
-    <li><a href="#">Inicio</a></li>
-    <li><a href="#">Practica 1</a></li>
-    <li class="active"><span>Informe</span></li>
+    <div class="row">
+        <div class="col-xs-8 text-left">
+            {{#breadcrumb-list}}
+            <li><a href="{{href}}">{{tag}}</a></li>
+            {{/breadcrumb-list}}
+            <li class="active"><span>{{breadcrumb-active}}</span></li>
+        </div>
+        {{#new-project-btn}}
+        <div class="pull-right">
+            <div class="container-fluid">
+                <a href="/nueva-practica" id="new-project-btn" class="btn btn-default btn-sm" role="button">Nueva Práctica</a>
+            </div>
+        </div>
+        {{/new-project-btn}}
+    </div>
 </ol>
 
 
 <!--CONTENT-->
 <div class="container">
-
+    <h2> REPORT </h2>
 </div>
 
 <!--FOOTER-->

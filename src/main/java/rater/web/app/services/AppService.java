@@ -2,12 +2,18 @@ package rater.web.app.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import rater.web.app.classes.Project;
 import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.session.UserSession;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,6 +22,7 @@ public class AppService {
 
     private final UserSession userSession;
     private final ProjectRepository projectRepository;
+    private static String UPLOADED_FOLDER = "/home/alex/Desktop/projects/"; //dentro del docker
 
     @Autowired
     public AppService(UserSession userSession, ProjectRepository projectRepository) {
@@ -56,4 +63,19 @@ public class AppService {
     public void deleteProjectById(long id){
         projectRepository.deleteById(id);
     }
+
+    public String uploadProject(long id, MultipartFile file){
+        try {
+            // Get the file and save it somewhere
+            byte[] bytes = file.getBytes();
+            String projectUpdloadedId = userSession.hashCode() + "_" + System.nanoTime();
+            Path path = Paths.get(UPLOADED_FOLDER + projectUpdloadedId);
+            Files.write(path, bytes);
+            return projectUpdloadedId;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

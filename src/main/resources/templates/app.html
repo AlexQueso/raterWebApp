@@ -5,6 +5,15 @@
     <title>URJC - EDA</title>
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/styles.css"/>
+
+    <script>
+        function DisplayProgressMessage(ctl, msg) {
+            $(ctl).prop("disabled", true);
+            $(ctl).text(msg);
+            return true;
+          }
+    </script>
+
 </head>
 
 <body>
@@ -139,7 +148,7 @@
                         </form>
                         {{/professor}}
                         {{#student}}
-                        <form action="/rate-project/{{id}}" method="POST" enctype="multipart/form-data">
+                        <form id="myForm" action="/rate-project/{{id}}" method="POST" enctype="multipart/form-data">
                             <div class="form-group">
                                 <p>Esta corrección se realizará de forma anónima y no será efectiva de cara a la correción oficial.
                                 La entrega de la práctica deberá realizarse a través del Aula Virtual.
@@ -151,7 +160,8 @@
                                 <p class="help-block">Formato zip</p>
                             </div>
                             <br>
-                            <input type="submit" value="Corregir" class="btn btn-default text-right">
+                            <button type="submit" id="submitButton" class="btn btn-default text-right"
+                                    onclick="return DisplayProgressMessage(this, 'Corrigiendo...');">Corregir</button>
                         </form>
                         {{/student}}
                     </div>
@@ -208,6 +218,11 @@
     </div>
     {{/new-project}}
 
+    {{#loading}}
+        <p> compilando y ejecutando tests</p>
+        <p> esto puede tardar unos segundos </p>
+
+    {{/loading}}
     <!--FOOTER-->
     <footer class="footer fixed-bottom">
         <div class="footer-copyright text-center py-3">© 2020 Copyright:
