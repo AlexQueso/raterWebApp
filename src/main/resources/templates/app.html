@@ -5,18 +5,21 @@
     <title>URJC - EDA</title>
     <link rel="stylesheet" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/styles.css"/>
-
-    <script>
-        function DisplayProgressMessage(ctl, msg) {
-            $(ctl).prop("disabled", true);
-            $(ctl).text(msg);
-            return true;
-          }
-    </script>
-
 </head>
 
 <body>
+    <script>
+        function DisplayProgressMessage(ctl, msg) {
+            if (document.getElementById("inputFile").files.length == 0 || document.getElementById("inputFile").value == null){
+                document.getElementById("inputFile").focus();
+                return false;
+            } else {
+                //alert("Espera mientras se autocorrige tu práctica...");
+                $(ctl).text(msg);
+                return true;
+            }
+        }
+    </script>
     <!--NAVBAR-->
     <nav class="navbar navbar-static-top navbar-inverse navbar-expand-lg">
         <a class="navbar-brand" href="https://www.aulavirtual.urjc.es/">
@@ -148,7 +151,7 @@
                         </form>
                         {{/professor}}
                         {{#student}}
-                        <form id="myForm" action="/rate-project/{{id}}" method="POST" enctype="multipart/form-data">
+                        <form name="fileForm" action="/rate-project/{{id}}" method="POST" enctype="multipart/form-data">
                             <div class="form-group">
                                 <p>Esta corrección se realizará de forma anónima y no será efectiva de cara a la correción oficial.
                                 La entrega de la práctica deberá realizarse a través del Aula Virtual.
@@ -156,12 +159,12 @@
                                 <br>
 
                                 <label>Selecciona directorio raiz del proyecto</label>
-                                <input type="file" name="file" required>
+                                <input id="inputFile" type="file" name="file" required>
                                 <p class="help-block">Formato zip</p>
                             </div>
                             <br>
-                            <button type="submit" id="submitButton" class="btn btn-default text-right"
-                                    onclick="return DisplayProgressMessage(this, 'Corrigiendo...');">Corregir</button>
+                            <button type="submit" class="btn btn-default text-right" name="btnCorregir"
+                                    onclick="return DisplayProgressMessage(this, 'Corrigiendo...')"> Corregir </button>
                         </form>
                         {{/student}}
                     </div>

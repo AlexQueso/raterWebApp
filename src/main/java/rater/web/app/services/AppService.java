@@ -68,7 +68,7 @@ public class AppService {
         try {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            String projectUpdloadedId = userSession.hashCode() + "_" + System.nanoTime();
+            String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime() + ".zip";
             Path path = Paths.get(UPLOADED_FOLDER + projectUpdloadedId);
             Files.write(path, bytes);
             return projectUpdloadedId;
