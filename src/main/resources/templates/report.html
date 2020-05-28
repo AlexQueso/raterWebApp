@@ -3,54 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>URJC - EDA</title>
-    <link rel="stylesheet" href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/styles.css"/>
 </head>
 
 <body>
-<!--NAVBAR-->
-<nav class="navbar navbar-static-top navbar-inverse navbar-expand-lg">
-    <a class="navbar-brand" href="https://urjc.es">
-        <img src="/SVG/logoURJC.svg" alt="logo">
-    </a>
-    <div class="collapse navbar-collapse">
-        <button id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</button>
-    </div>
-</nav>
-
-<!--BREADCRUMB-->
-<ol class="breadcrumb breadcrumb-arrow">
-    <div class="row">
-        <div class="col-xs-8 text-left">
-            {{#breadcrumb-list}}
-            <li><a href="{{href}}">{{tag}}</a></li>
-            {{/breadcrumb-list}}
-            <li class="active"><span>{{breadcrumb-active}}</span></li>
+    <!--NAVBAR-->
+    <nav class="navbar navbar-static-top navbar-inverse navbar-expand-lg">
+        <a class="navbar-brand" href="https://www.aulavirtual.urjc.es/">
+            <img src="/SVG/logoURJC.svg" alt="logo">
+        </a>
+        {{#professor}}
+        <div class="text-right">
+            <a role="button" href="/log-out" id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Log Out</a>
         </div>
-        {{#new-project-btn}}
-        <div class="pull-right">
-            <div class="container-fluid">
-                <a href="/nueva-practica" id="new-project-btn" class="btn btn-default btn-sm" role="button">Nueva Práctica</a>
+        {{/professor}}
+        {{#student}}
+        <div class="text-right">
+            <a role="button" href="/login" id="go-to-login" type="button" class="btn btn-danger navbar-btn navbar-right">Acceso profesores</a>
+        </div>
+        {{/student}}
+    </nav>
+
+    <!--BREADCRUMB-->
+    <ol class="breadcrumb breadcrumb-arrow">
+        <div class="row">
+            <div class="col-xs-8 text-left">
+                {{#breadcrumb-list}}
+                <li><a href="{{href}}">{{tag}}</a></li>
+                {{/breadcrumb-list}}
+                <li class="active"><span>{{breadcrumb-active}}</span></li>
             </div>
+            {{#new-project-btn}}
+            <div class="pull-right">
+                <div class="container-fluid">
+                    <a href="/nueva-practica" id="new-project-btn" class="btn btn-default btn-sm" role="button">Nueva Práctica</a>
+                </div>
+            </div>
+            {{/new-project-btn}}
         </div>
-        {{/new-project-btn}}
+    </ol>
+
+    <!--STUDENT REPORT-->
+    <div class="container">
+        <h2> REPORT </h2>
+        <p>{{json}}</p>
     </div>
-</ol>
 
+    <!--FOOTER-->
+    <footer class="footer fixed-bottom">
+        <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            <a href="https://github.com/AlexQueso"> github.com/AlexQueso</a>
+        </div>
+    </footer>
 
-<!--CONTENT-->
-<div class="container">
-    <h2> REPORT </h2>
-</div>
-
-<!--FOOTER-->
-<footer class="footer fixed-bottom">
-    <div class="footer-copyright text-center py-3">© 2020 Copyright:
-        <a href="https://github.com/AlexQueso"> github.com/AlexQueso</a>
-    </div>
-</footer>
-
-<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
-<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>

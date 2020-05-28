@@ -1,5 +1,6 @@
 package rater.web.app.services;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,7 @@ public class AppService {
 
     private final UserSession userSession;
     private final ProjectRepository projectRepository;
-    private static String UPLOADED_FOLDER = "/home/alex/Desktop/projects/"; //dentro del docker
+    private static String UPLOADED_FOLDER = "/home/alex/Desktop/projects/students/"; //dentro del docker
 
     @Autowired
     public AppService(UserSession userSession, ProjectRepository projectRepository) {
@@ -32,8 +33,8 @@ public class AppService {
 
     @PostConstruct
     public void initDataBase(){
-        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File(""));
-        Project p2 = new Project("Práctica 2", "\n", new File(""));
+        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File("/home/alex/Desktop/projects/references/practica_1"));
+        Project p2 = new Project("Práctica 2", "", new File(""));
         Project p3 = new Project("Práctica 3", "Diccionarios Ordenados", new File(""));
         Project p4 = new Project("Examen Final", "Convocatoria ordinaria", new File(""));
         Project p5 = new Project("Examen Final", "Convocatoria extraordinaria", new File(""));
@@ -66,10 +67,9 @@ public class AppService {
 
     public String uploadProject(long id, MultipartFile file){
         try {
-            // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime() + ".zip";
-            Path path = Paths.get(UPLOADED_FOLDER + projectUpdloadedId);
+            String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime();
+            Path path = Paths.get(UPLOADED_FOLDER + projectUpdloadedId + ".zip");
             Files.write(path, bytes);
             return projectUpdloadedId;
         } catch (IOException e) {
@@ -77,5 +77,4 @@ public class AppService {
             return null;
         }
     }
-
 }

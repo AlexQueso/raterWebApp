@@ -57,6 +57,8 @@ public class AppController {
 
     @GetMapping("/practica/{id}")
     public String projectOverview(@PathVariable long id, Model model){
+        //todo: comprobar si ya hay un report guardado en userSession.studentReports y si lo hay, añadir boton para visualizarlo
+
         Project p = appService.getProjectById(id);
         model.addAttribute("project", p);
 
@@ -106,7 +108,7 @@ public class AppController {
             return "redirect:uploadStatus";
         }
         String studentProjectId = appService.uploadProject(id, file);
-        return Utils.redirectTo("/generating-report/" + id + "/" + studentProjectId);
+        return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
     }
 
     @PostMapping(value = "/rate-all-projects/{id}")

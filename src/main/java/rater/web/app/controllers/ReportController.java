@@ -1,5 +1,6 @@
 package rater.web.app.controllers;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,29 +26,20 @@ public class ReportController {
         this.appService = appService;
     }
 
-    @GetMapping("/generating-report/{idReference}/{idProject}")
-    public String loadingPage(Model model, @PathVariable long idReference, @PathVariable String idProject){
+    @GetMapping("/report/{idReference}/{idProject}")
+    public String reportStudent(Model model, @PathVariable long idReference, @PathVariable String idProject){
 
         Project p = appService.getProjectById(idReference);
-        model.addAttribute("loading", true);
+        JSONObject jsonReport = reportService.rateStudentProject(idReference, idProject);
+
+        model.addAttribute("json", jsonReport.toJSONString());
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
         breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
         model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrigiendo...");
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return "app";
-    }
-
-    @GetMapping("/report/{idReference}/{idProject}")
-    public String reportStudent(){
+        model.addAttribute("breadcrumb-active", "Informe");
 
         return "report";
     }
