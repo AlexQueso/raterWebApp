@@ -1,5 +1,6 @@
 package rater.web.app.services;
 
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -37,7 +38,6 @@ public class ReportService {
         String projectPath = getProjectPath(idProject);
         String referenceName = p.getName();
 
-        System.out.println("java -jar " + jarPath + " -p " + referencePath + " " + projectPath + " " + referenceName);
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "java -jar " + jarPath + " -p " + referencePath + " " + projectPath + " "
                 + "p1");
@@ -60,7 +60,7 @@ public class ReportService {
 
         JSONObject json = getJSONfromServiceExecution(projectsPath, idProject);
         userSession.addStudentReport(referenceName, json);
-
+        deleteFiles(idProject);
         return json;
     }
 
@@ -97,5 +97,22 @@ public class ReportService {
             e.printStackTrace();
         }
         return jsonObject;
+    }
+
+    private void deleteFiles(String idProject){
+        File studentProjectsDir = new File (projectsPath);
+        for (File f: Objects.requireNonNull(studentProjectsDir.listFiles())){
+            if (f.getName().contains(idProject)){
+                if (f.isDirectory()){
+                    try {
+                        FileUtils.deleteDirectory(f);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    f.delete();
+                }
+            }
+        }
     }
 }
