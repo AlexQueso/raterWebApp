@@ -1,10 +1,8 @@
 package rater.web.app.services;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import rater.web.app.classes.Project;
 import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.session.UserSession;
@@ -15,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -76,5 +73,9 @@ public class AppService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean reportAlreadyExists(String key) {
+        return userSession.getStudentReports().get(key) != null;
     }
 }

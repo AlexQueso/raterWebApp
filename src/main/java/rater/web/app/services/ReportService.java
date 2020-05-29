@@ -16,7 +16,6 @@ import rater.web.app.classes.TestCase;
 import rater.web.app.session.UserSession;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 
@@ -64,7 +63,6 @@ public class ReportService {
         }
 
         JSONObject json = getJSONfromServiceExecution(projectsPath, idProject);
-        userSession.addStudentReport(referenceName, json);
         deleteFiles(idProject);
         return json;
     }
@@ -129,9 +127,8 @@ public class ReportService {
         LinkedList<Test> testLinkedList = new LinkedList<>();
 
         JSONArray tests = (JSONArray) json.get("test");
-        Iterator<JSONObject> it = tests.iterator();
-        while(it.hasNext()){
-            JSONObject jsonTest = it.next();
+        for (Object o : tests) {
+            JSONObject jsonTest = (JSONObject) o;
             Test test = new Test();
             test.setTotal(Math.toIntExact((Long) jsonTest.get("total")));
             test.setCorrect(Math.toIntExact((Long) jsonTest.get("correct")));
@@ -145,9 +142,8 @@ public class ReportService {
                 LinkedList<TestCase> testCasesLinkedList = new LinkedList<>();
 
                 JSONArray testCases = (JSONArray) jsonTest.get("testCases");
-                Iterator<JSONObject> it2 = testCases.iterator();
-                while (it2.hasNext()) {
-                    JSONObject jsonTestCase = it2.next();
+                for (Object aCase : testCases) {
+                    JSONObject jsonTestCase = (JSONObject) aCase;
                     TestCase testCase = new TestCase();
                     testCase.setTrace((String) jsonTestCase.get("trace"));
                     testCase.setCause((String) jsonTestCase.get("cause"));
@@ -160,5 +156,30 @@ public class ReportService {
         }
         r.setTests(testLinkedList);
         return r;
+    }
+
+    public void saveReportUserSession(Project p, Report report) {
+        userSession.getStudentReports().put(p.getName(), report);
+    }
+
+    public Report getStoredReport(Project p, long idReference) {
+        return userSession.getStudentReports().get(p.getName());
+    }
+
+    public void fillModelwithStudentRepor(Model model, Report report){
+
+        model.addAttribute("individual-report", true);
+        //header
+        model.addAttribute("project-name", report.getProjectName());
+        model.addAttribute("date", report.getDate());
+        //build
+        if (report.getBuild().contains("SUCCESSFUL"))
+            model.addAttribute("build-success", "success");
+        else
+            model.addAttribute("build-success", "danger");
+        model.addAttribute("build", report.getBuild());
+        //tests
+        model.addAttribute("tests", report.getTests());
+
     }
 }

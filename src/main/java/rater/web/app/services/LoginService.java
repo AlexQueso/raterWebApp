@@ -20,7 +20,6 @@ public class LoginService {
         if (user.equals("q") && password.equals("q")){
             userSession.setProfessor(true);
             userSession.setGlobalReports(new HashMap<>());
-            userSession.setIndividualReports(new HashMap<>());
             return true;
         }
         return false;

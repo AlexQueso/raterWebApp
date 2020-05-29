@@ -1,8 +1,8 @@
 package rater.web.app.session;
 
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
+import rater.web.app.classes.Report;
 
 import java.util.HashMap;
 
@@ -12,28 +12,15 @@ public class UserSession {
 
     private boolean professor = false;
     private boolean newUser = true;
-    private HashMap<String, JSONObject> studentReports = new HashMap<>();
-    private HashMap<String, JSONObject> globalReports;
-    private HashMap<String, JSONObject> individualReports;
+    private HashMap<String, Report> studentReports = new HashMap<>();
+    private HashMap<String, Report> globalReports;
 
-    public boolean isProfessor(){
+    public boolean isProfessor() {
         return professor;
     }
 
-    public void setProfessor(boolean b){
-        professor = b;
-    }
-
-    public HashMap<String, JSONObject> getStudentReports() {
-        return studentReports;
-    }
-
-    public HashMap<String, JSONObject> getGlobalReports() {
-        return globalReports;
-    }
-
-    public HashMap<String, JSONObject> getIndividualReports() {
-        return individualReports;
+    public void setProfessor(boolean professor) {
+        this.professor = professor;
     }
 
     public boolean isNewUser() {
@@ -44,27 +31,19 @@ public class UserSession {
         this.newUser = newUser;
     }
 
-    public void setGlobalReports(HashMap<String, JSONObject> globalReports) {
-        this.globalReports = globalReports;
+    public HashMap<String, Report> getStudentReports() {
+        return studentReports;
     }
 
-    public void setIndividualReports(HashMap<String, JSONObject> individualReports) {
-        this.individualReports = individualReports;
-    }
-
-    public void setStudentReports(HashMap<String, JSONObject> studentReports) {
+    public void setStudentReports(HashMap<String, Report> studentReports) {
         this.studentReports = studentReports;
     }
 
-    public void addStudentReport(String name, JSONObject report){
-        studentReports.put(name, report);
+    public HashMap<String, Report> getGlobalReports() {
+        return globalReports;
     }
 
-    public void addGlobalReport(String name, JSONObject report){
-        globalReports.put(name, report);
-    }
-
-    public void addIndividualReport(String name, JSONObject report){
-        individualReports.put(name, report);
+    public void setGlobalReports(HashMap<String, Report> globalReports) {
+        this.globalReports = globalReports;
     }
 }

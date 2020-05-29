@@ -14,11 +14,6 @@ import rater.web.app.classes.Project;
 import rater.web.app.services.AppService;
 import rater.web.app.utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,8 +52,6 @@ public class AppController {
 
     @GetMapping("/practica/{id}")
     public String projectOverview(@PathVariable long id, Model model){
-        //todo: comprobar si ya hay un report guardado en userSession.studentReports y si lo hay, añadir boton para visualizarlo
-
         Project p = appService.getProjectById(id);
         model.addAttribute("project", p);
 
@@ -66,6 +59,10 @@ public class AppController {
             model.addAttribute("professor", true);
         else
             model.addAttribute("student", true);
+
+        if (appService.reportAlreadyExists(p.getName())){
+            model.addAttribute("view-report", true);
+        }
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
