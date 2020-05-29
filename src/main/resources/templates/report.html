@@ -10,7 +10,7 @@
 <body>
     <!--NAVBAR-->
     <nav class="navbar navbar-static-top navbar-inverse navbar-expand-lg">
-        <a class="navbar-brand" href="https://www.aulavirtual.urjc.es/">
+        <a class="navbar-brand" href="/">
             <img src="/SVG/logoURJC.svg" alt="logo">
         </a>
         {{#professor}}
@@ -44,18 +44,39 @@
         </div>
     </ol>
 
-    <!--STUDENT REPORT-->
+    <!--INDIVIDUAL REPORT-->
+    {{#individual-report}}
     <div class="container">
-        <h2> REPORT </h2>
-        <p>{{json}}</p>
-    </div>
+        <h3>{{project-name}}&nbsp;&nbsp;<small>{{date}}</small></h3>
+        <br>
 
-    <!--FOOTER-->
-    <footer class="footer fixed-bottom">
-        <div class="footer-copyright text-center py-3">© 2020 Copyright:
-            <a href="https://github.com/AlexQueso"> github.com/AlexQueso</a>
+        <!-- BUILD -->
+        <div class="panel panel-{{build-success}}">
+            <div class="panel-heading">Compilación</div>
+            <div class="panel-body">{{build}}</div>
         </div>
-    </footer>
+        <hr>
+        <p>Tests</p>
+        {{#tests}}
+        <div class="panel panel-{{success}}">
+            <div class="panel-heading">{{testSuite}}</div>
+            <div class="panel-body">
+                Correctos: {{correct}}/{{total}}
+                {{#testCases}}
+                <hr>
+                <strong>{{testName}}</strong>&nbsp;&nbsp;&nbsp;{{cause}}
+                <p>{{trace}}</p>
+                {{/testCases}}
+            </div>
+        </div>
+        {{/tests}}
+    </div>
+    {{/individual-report}}
+
+    <!--GLOBAL REPORT-->
+    {{#global-report}}
+
+    {{/global-report}}
 
     <script src="/webjars/jquery/1.9.1/jquery.min.js"></script>
     <script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import rater.web.app.classes.Breadcrumb;
 import rater.web.app.classes.Project;
+import rater.web.app.classes.Report;
 import rater.web.app.services.AppService;
 import rater.web.app.services.ReportService;
 import rater.web.app.utils.Utils;
@@ -31,15 +32,27 @@ public class ReportController {
 
         Project p = appService.getProjectById(idReference);
         JSONObject jsonReport = reportService.rateStudentProject(idReference, idProject);
+        Report report = reportService.processJsonIndividualProject(jsonReport);
 
-        model.addAttribute("json", jsonReport.toJSONString());
+        model.addAttribute("individual-report", true);
+        //header
+        model.addAttribute("project-name", report.getProjectName());
+        model.addAttribute("date", report.getDate());
+        //build
+        if (report.getBuild().contains("SUCCESSFUL"))
+            model.addAttribute("build-success", "success");
+        else
+            model.addAttribute("build-success", "danger");
+        model.addAttribute("build", report.getBuild());
+        //tests
+        model.addAttribute("tests", report.getTests());
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
         breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
         model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Informe");
+        model.addAttribute("breadcrumb-active", "Corrección");
 
         return "report";
     }

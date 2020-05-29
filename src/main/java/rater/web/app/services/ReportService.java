@@ -8,11 +8,16 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 import rater.web.app.classes.Project;
+import rater.web.app.classes.Report;
+import rater.web.app.classes.Test;
+import rater.web.app.classes.TestCase;
 import rater.web.app.session.UserSession;
 
 import java.io.*;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Objects;
 
 @Component
@@ -36,11 +41,11 @@ public class ReportService {
         Project p = appService.getProjectById(idReference);
         String referencePath = p.getPathToDirectory().getAbsolutePath();
         String projectPath = getProjectPath(idProject);
-        String referenceName = p.getName();
+        String referenceName = p.getName().replace(" ", "_");
 
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "java -jar " + jarPath + " -p " + referencePath + " " + projectPath + " "
-                + "p1");
+                + referenceName);
         try {
             Process process = processBuilder.start();
 
@@ -114,5 +119,46 @@ public class ReportService {
                 }
             }
         }
+    }
+
+    public Report processJsonIndividualProject(JSONObject json) {
+        Report r = new Report();
+        r.setProjectName(((String) json.get("projectName")).replace("_", " "));
+        r.setDate(((String) json.get("date")).replace("-", ""));
+        r.setBuild((String) json.get("build"));
+        LinkedList<Test> testLinkedList = new LinkedList<>();
+
+        JSONArray tests = (JSONArray) json.get("test");
+        Iterator<JSONObject> it = tests.iterator();
+        while(it.hasNext()){
+            JSONObject jsonTest = it.next();
+            Test test = new Test();
+            test.setTotal(Math.toIntExact((Long) jsonTest.get("total")));
+            test.setCorrect(Math.toIntExact((Long) jsonTest.get("correct")));
+            test.setTestSuite((String) jsonTest.get("testSuite"));
+            if (test.getCorrect() == test.getTotal())
+                test.setSuccess("success");
+            else
+                test.setSuccess("danger");
+
+            if (test.getTotal() > test.getCorrect()) {
+                LinkedList<TestCase> testCasesLinkedList = new LinkedList<>();
+
+                JSONArray testCases = (JSONArray) jsonTest.get("testCases");
+                Iterator<JSONObject> it2 = testCases.iterator();
+                while (it2.hasNext()) {
+                    JSONObject jsonTestCase = it2.next();
+                    TestCase testCase = new TestCase();
+                    testCase.setTrace((String) jsonTestCase.get("trace"));
+                    testCase.setCause((String) jsonTestCase.get("cause"));
+                    testCase.setTestName((String) jsonTestCase.get("testName"));
+                    testCasesLinkedList.add(testCase);
+                }
+                test.setTestCases(testCasesLinkedList);
+            }
+            testLinkedList.add(test);
+        }
+        r.setTests(testLinkedList);
+        return r;
     }
 }
