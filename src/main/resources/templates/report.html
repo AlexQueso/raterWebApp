@@ -61,9 +61,8 @@
         <div class="panel panel-{{success}}">
             <div class="panel-heading">{{testSuite}}</div>
             <div class="panel-body">
-                Correctos: {{correct}}/{{total}}
+                Correctos: {{correct}}/{{total}}<br>
                 {{#testCases}}
-                <hr>
                 <strong>{{testName}}&nbsp;&nbsp;&nbsp;{{cause}}</strong>
                 <pre>{{trace}}</pre>
                 {{/testCases}}

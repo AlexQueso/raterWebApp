@@ -35,7 +35,7 @@ public class AppController {
         model.addAttribute("projects", projects);
         model.addAttribute("main", true);
 
-        if (userIsProfessor()) {
+        if (appService.userIsProfessor()) {
             model.addAttribute("professor", true);
             model.addAttribute("new-project-btn", true);
         }
@@ -55,7 +55,7 @@ public class AppController {
         Project p = appService.getProjectById(id);
         model.addAttribute("project", p);
 
-        if (userIsProfessor())
+        if (appService.userIsProfessor())
             model.addAttribute("professor", true);
         else
             model.addAttribute("student", true);
@@ -76,7 +76,7 @@ public class AppController {
     public String newProject(Model model){
         model.addAttribute("new-project", true);
 
-        if (userIsProfessor())
+        if (appService.userIsProfessor())
             model.addAttribute("professor", true);
         else
             model.addAttribute("student", true);
@@ -123,9 +123,5 @@ public class AppController {
     public String deleteProject(@PathVariable long id){
         appService.deleteProjectById(id);
         return Utils.redirectTo("/");
-    }
-
-    public boolean userIsProfessor(){
-        return appService.userIsProfessor();
     }
 }

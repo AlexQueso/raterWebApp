@@ -35,6 +35,13 @@ public class ReportController {
         reportService.saveReportUserSession(p, report);
         reportService.fillModelwithStudentRepor(model, report);
 
+        if (appService.userIsProfessor()) {
+            model.addAttribute("professor", true);
+            model.addAttribute("new-project-btn", true);
+        }
+        else
+            model.addAttribute("student", true);
+
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
@@ -51,6 +58,13 @@ public class ReportController {
         Report report = reportService.getStoredReport(p, idReference);
         reportService.fillModelwithStudentRepor(model, report);
 
+        if (appService.userIsProfessor()) {
+            model.addAttribute("professor", true);
+            model.addAttribute("new-project-btn", true);
+        }
+        else
+            model.addAttribute("student", true);
+        
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
