@@ -16,6 +16,7 @@ import rater.web.app.utils.Utils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class AppController {
@@ -98,11 +99,9 @@ public class AppController {
     }
 
     @PostMapping(value = "/rate-project/{id}")
-    public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file,
-                                     RedirectAttributes redirectAttributes){
-        if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
+    public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
+        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".zip")){
+            return Utils.redirectTo("/practica/" + id);
         }
         String studentProjectId = appService.uploadProject(id, file);
         return Utils.redirectTo("/report/" + id + "/" + studentProjectId);

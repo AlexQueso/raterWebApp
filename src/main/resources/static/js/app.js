@@ -1,6 +1,11 @@
 function DisplayProgressMessage(button, msg) {
-    if (document.getElementById("inputFile").files.length == 0 || document.getElementById("inputFile").value == null){
-        document.getElementById("inputFile").focus();
+    var input = document.getElementById("inputFile");
+    if (input.files.length == 0 || input.value == null){
+        input.focus();
+        return false;
+    } else if (!(input.value.split('.')[1] == 'zip')){
+        alert("El fichero debe tener formato '.zip'");
+        input.focus();
         return false;
     } else {
         var e = button;
