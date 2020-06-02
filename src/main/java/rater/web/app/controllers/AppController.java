@@ -1,5 +1,6 @@
 package rater.web.app.controllers;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -92,8 +93,8 @@ public class AppController {
     }
 
     @PostMapping("/crear-practica")
-    public String saveNewProject(Project project){
-        appService.saveProject(project);
+    public String saveNewProject(Project project, @RequestParam("file") MultipartFile file){
+        appService.createProject(project, file);
 
         return Utils.redirectTo("/");
     }

@@ -127,12 +127,12 @@
                 <div id="overlay-msg" class="col-sm-4">
                     <div class="panel panel-default">
                         <div class="panel-heading text-center">
-                            <p class="panel-title">Tu práctica se esta autocorrigiendo</p>
+                            <p class="panel-title">Tu práctica se está autocorrigiendo</p>
 <!--                            <img src="/GIF/loading.gif">-->
                         </div>
                         <div class="panel-body text-center">
-                            Este proceso puede tardar unos segundos, <br>
-                            por favor, espera.
+                            Este proceso puede tardar unos segundos. <br>
+                            Por favor, espera.
                         </div>
                     </div>
                 </div>
@@ -176,9 +176,6 @@
                             <br>
                             <div class="row">
                                 <div class="col-xs-6 text-left">
-<!--                                    <button type="submit" class="btn btn-default text-right" name="btnCorregir"-->
-<!--                                            onclick="return DisplayProgressMessage(this, 'Corrigiendo...')"> Corregir-->
-<!--                                    </button>-->
                                     <button id="rateBtn" type="submit" class="btn btn-default text-right" name="rateBtn"
                                             onclick="return DisplayProgressMessage(this, 'Corrigiendo...')">Corregir
                                     </button>
@@ -211,7 +208,7 @@
                         <h3>Nueva Práctica</h3>
                     </div>
                     <div class="panel-body">
-                        <form action="/crear-practica" method="post">
+                        <form action="/crear-practica" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>Nombre</label>
                                 <input type="text" class="form-control" name="name" placeholder="Nombre" required>
@@ -222,13 +219,14 @@
                             </div>
                             <div class="form-group">
                                 <label>Seleccione projecto de referencia</label>
-                                <input type="file" name="file" required>
+                                <input id="inputfile-new-project" type="file" name="file" required>
                                 <p class="help-block">Formato zip</p>
                             </div>
                             <div class="row">
                                 <div class="col-xs-4 col-xs-offset-8 text-right">
                                     <div class="container-fluid">
-                                        <button type="submit" class="btn btn-default text-right">Subir</button>
+                                        <button type="submit" class="btn btn-default text-right"
+                                                onclick="return newProjectButton()">Subir</button>
                                     </div>
                                 </div>
                             </div>

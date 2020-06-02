@@ -18,3 +18,15 @@ function DisplayProgressMessage(button, msg) {
     }
 }
 
+function newProjectButton(){
+    var input = document.getElementById("inputfile-new-project");
+    if (input.files.length == 0 || input.value == null){
+        input.focus();
+        return false;
+    }else if (!(input.value.split('.')[1] == 'zip')){
+        alert("El fichero debe tener formato '.zip'");
+        input.focus();
+        return false;
+    }
+}
+
