@@ -30,3 +30,7 @@ function newProjectButton(){
     }
 }
 
+function confirmDelete(){
+    return confirm('¿Seguro que quieres eliminar la práctica?');
+}
+

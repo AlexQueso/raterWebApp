@@ -63,7 +63,8 @@
                         <div class="row">
                             {{#professor}}
                             <div class="col-xs-6 text-left">
-                                <a class="btn btn-danger" href="/delete-project/{{id}}" role="button">Borrar</a>
+                                <a onclick="return confirmDelete();" class="btn btn-danger"
+                                   href="/delete-project/{{id}}" role="button">Borrar</a>
                             </div>
                             {{/professor}}
                             <div class="col-sx-6 text-right">
