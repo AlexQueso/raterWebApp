@@ -47,8 +47,18 @@
     <!--INDIVIDUAL REPORT-->
     {{#individual-report}}
     <div class="container">
-        <h3>{{project-name}}&nbsp;&nbsp;<small>{{date}}</small></h3>
-        <br>
+        <div class="row">
+            <div class="col-xs-6 text-left">
+                <h3>{{project-name}}&nbsp;&nbsp;<small>{{date}}</small></h3>
+                <br>
+            </div>
+            <div class="col-sx-6 text-right">
+                <div class="container-fluid">
+                    <a role="button" href="/practica/{{id-project}}" class="btn btn-danger" type="button">Volver</a>
+                </div>
+            </div>
+        </div>
+
 
         <!-- BUILD -->
         <div class="panel panel-{{build-success}}">
