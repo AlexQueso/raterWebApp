@@ -7,6 +7,7 @@ public class Report {
     private String date;
     private String studentName;
     private String build;
+    private String buildSuccess;
     private LinkedList<Test> tests;
 
     public Report() {
@@ -51,5 +52,13 @@ public class Report {
 
     public void setTests(LinkedList<Test> tests) {
         this.tests = tests;
+    }
+
+    public String getBuildSuccess() {
+        return buildSuccess;
+    }
+
+    public void setBuildSuccess(String buildSuccess) {
+        this.buildSuccess = buildSuccess;
     }
 }

@@ -11,6 +11,7 @@ import rater.web.app.classes.Project;
 import rater.web.app.classes.Report;
 import rater.web.app.services.AppService;
 import rater.web.app.services.ReportService;
+import rater.web.app.utils.Utils;
 
 import java.util.LinkedList;
 
@@ -28,7 +29,6 @@ public class ReportController {
 
     @GetMapping("/report/{idReference}/{idProject}")
     public String reportStudent(Model model, @PathVariable long idReference, @PathVariable String idProject){
-
         Project p = appService.getProjectById(idReference);
         JSONObject jsonReport = reportService.rateStudentProject(idReference, idProject);
         Report report = reportService.processJsonIndividualProject(jsonReport);
@@ -73,6 +73,34 @@ public class ReportController {
         breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
         model.addAttribute("breadcrumb-list", breadcrumbs);
         model.addAttribute("breadcrumb-active", "Corrección");
+
+        return "report";
+    }
+
+    @GetMapping("/report-global/{id}")
+    public String reportGlobal(Model model, @PathVariable long id){
+        Project p = appService.getProjectById(id);
+        LinkedList<Report> reports = reportService.rateAllStudentProjects(p);
+
+        model.addAttribute("global-report", true);
+        model.addAttribute("project-name", p.getName());
+        model.addAttribute("date", reports.getFirst().getDate());
+        model.addAttribute("reports", reports);
+
+        model.addAttribute("id-project", p.getId());
+        if (appService.userIsProfessor()) {
+            model.addAttribute("professor", true);
+            model.addAttribute("new-project-btn", true);
+        }
+        else
+            model.addAttribute("student", true);
+
+        //breadcrumb
+        LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
+        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +id));
+        model.addAttribute("breadcrumb-list", breadcrumbs);
+        model.addAttribute("breadcrumb-active", "Corrección Global");
 
         return "report";
     }

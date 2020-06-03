@@ -128,8 +128,13 @@
                 <div id="overlay-msg" class="col-sm-4">
                     <div class="panel panel-default">
                         <div class="panel-heading text-center">
-                            <p class="panel-title">Tu práctica se está autocorrigiendo</p>
+                            {{#professor}}
+                            <p class="panel-title">Se está corrigiendo un conjunto de prácticas.</p>
 <!--                            <img src="/GIF/loading.gif">-->
+                            {{/professor}}
+                            {{#student}}
+                            <p class="panel-title">Tu práctica se está autocorrigiendo</p>
+                            {{/student}}
                         </div>
                         <div class="panel-body text-center">
                             Este proceso puede tardar unos segundos. <br>
@@ -151,15 +156,29 @@
                     </div>
                     <div class="panel-body">
                         {{#professor}}
-                        <form action="/rate-all-projects/{{id}}" method="post">
+                        <form action="/rate-all-projects/{{id}}" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <p>Corregir un conjunto de projectos</p>
                                 <br>
                                 <label>Selecciona directorio de proyectos</label>
-                                <input type="file" name="file" required>
+                                <input id="inputFile" type="file" name="file" required>
+                                <p class="help-block">Formato zip</p>
                             </div>
                             <br>
-                            <button type="submit" class="btn btn-default">Corregir todos</button>
+                            <div class="row">
+                                <div class="col-xs-6 text-left">
+                                    <button id="rateBtn" type="submit" class="btn btn-default text-right" name="rateBtn"
+                                            onclick="return DisplayProgressMessage(this, 'Corrigiendo...')">Corregir
+                                    </button>
+                                </div>
+<!--                                {{#view-report}}-->
+<!--                                <div class="col-sx-6 text-right">-->
+<!--                                    <div class="container-fluid">-->
+<!--                                        <a role="button" href="/report/{{id}}" class="btn btn-danger" type="button">Revisar</a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                {{/view-report}}-->
+                            </div>
                         </form>
                         {{/professor}}
                         {{#student}}
@@ -169,7 +188,6 @@
                                 La entrega de la práctica deberá realizarse a través del Aula Virtual.
                                 Cualquier librería no usada en clase puede provocar fallos de compilación.</p>
                                 <br>
-
                                 <label>Selecciona directorio raiz del proyecto</label>
                                 <input id="inputFile" type="file" name="file" required>
                                 <p class="help-block">Formato zip</p>

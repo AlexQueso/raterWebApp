@@ -34,13 +34,6 @@
                 {{/breadcrumb-list}}
                 <li class="active"><span>{{breadcrumb-active}}</span></li>
             </div>
-            {{#new-project-btn}}
-            <div class="pull-right">
-                <div class="container-fluid">
-                    <a href="/nueva-practica" id="new-project-btn" class="btn btn-default btn-sm" role="button">Nueva Práctica</a>
-                </div>
-            </div>
-            {{/new-project-btn}}
         </div>
     </ol>
 
@@ -84,7 +77,41 @@
 
     <!--GLOBAL REPORT-->
     {{#global-report}}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 text-left">
+                <h3>{{project-name}}&nbsp;&nbsp;<small>{{date}}</small></h3>
+                <br>
+            </div>
+        </div>
 
+        {{#reports}}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-6 text-left">
+                        {{studentName}}
+                    </div>
+                    <div class="col-sx-6 text-right">
+                        <div class="container-fluid">
+                            <a role="button" href="/individual-report/{{id-project}}/{{studentName}}" class="btn btn-danger" type="button">Informe Individual</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="panel panel-{{buildSuccess}}">
+                    <div class="panel-heading"><strong>Compilacion:</strong>&nbsp;&nbsp;{{build}}</div>
+                </div>
+                {{#tests}}
+                <div class="panel panel-{{success}}">
+                    <div class="panel-heading"><strong>{{testSuite}}:</strong>&nbsp;&nbsp;{{correct}}/{{total}}</div>
+                </div>
+                {{/tests}}
+            </div>
+        </div>
+        {{/reports}}
+    </div>
     {{/global-report}}
 
     <script src="/webjars/jquery/1.9.1/jquery.min.js"></script>

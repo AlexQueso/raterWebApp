@@ -80,6 +80,16 @@ public class AppService {
         }
     }
 
+    public void uploadProjectSet(long id, MultipartFile file){
+        try {
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(projectsPath + "/" + id + ".zip");
+            Files.write(path, bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean reportAlreadyExists(String key) {
         return userSession.getStudentReports().get(key) != null;
     }

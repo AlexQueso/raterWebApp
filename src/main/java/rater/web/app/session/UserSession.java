@@ -5,6 +5,7 @@ import org.springframework.web.context.annotation.SessionScope;
 import rater.web.app.classes.Report;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 @Component
 @SessionScope
@@ -12,8 +13,8 @@ public class UserSession {
 
     private boolean professor = false;
     private boolean newUser = true;
-    private HashMap<String, Report> studentReports = new HashMap<>();
-    private HashMap<String, Report> globalReports;
+    private HashMap<String, Report> studentReports = new HashMap<>(); //todo:cambiar string por long
+    private HashMap<String, LinkedList<Report>> globalReports;
 
     public boolean isProfessor() {
         return professor;
@@ -39,11 +40,11 @@ public class UserSession {
         this.studentReports = studentReports;
     }
 
-    public HashMap<String, Report> getGlobalReports() {
+    public HashMap<String, LinkedList<Report>> getGlobalReports() {
         return globalReports;
     }
 
-    public void setGlobalReports(HashMap<String, Report> globalReports) {
+    public void setGlobalReports(HashMap<String, LinkedList<Report>> globalReports) {
         this.globalReports = globalReports;
     }
 }

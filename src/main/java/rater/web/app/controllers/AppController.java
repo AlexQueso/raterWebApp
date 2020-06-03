@@ -109,14 +109,9 @@ public class AppController {
     }
 
     @PostMapping(value = "/rate-all-projects/{id}")
-    public String rateAllProjects(@PathVariable long id, @RequestParam("file") MultipartFile file,
-                                  RedirectAttributes redirectAttributes){
-        if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
-        }
-        appService.uploadProject(id, file);
-        return Utils.redirectTo("/");
+    public String rateAllProjects(@PathVariable long id, @RequestParam("file") MultipartFile file){
+        appService.uploadProjectSet(id, file);
+        return Utils.redirectTo("/report-global/" + id);
     }
 
     @GetMapping("/delete-project/{id}")
