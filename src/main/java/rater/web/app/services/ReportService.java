@@ -244,4 +244,12 @@ public class ReportService {
         }
     }
 
+    public Report getIndividualReport(long idReference, String studentName) {
+        LinkedList<Report> reports = userSession.getGlobalReports().get(Long.toString(idReference));
+        for(Report r: reports)
+            if (r.getStudentName().equals(studentName))
+                return r;
+
+        return null;
+    }
 }

@@ -53,6 +53,31 @@ public class ReportController {
         return "report";
     }
 
+    @GetMapping("/individual-report/{idReference}/{studentName}")
+    public String reviewIndividualReport(Model model, @PathVariable long idReference, @PathVariable String studentName){
+        Project p = appService.getProjectById(idReference);
+        Report report = reportService.getIndividualReport(idReference, studentName);
+        reportService.fillModelwithStudentRepor(model, report);
+
+        model.addAttribute("id-project", p.getId());
+        if (appService.userIsProfessor()) {
+            model.addAttribute("professor", true);
+            model.addAttribute("new-project-btn", true);
+        }
+        else
+            model.addAttribute("student", true);
+
+        //breadcrumb
+        LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
+        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
+        breadcrumbs.add(new Breadcrumb("Corrección Global", "/global-report-review/" + idReference));
+        model.addAttribute("breadcrumb-list", breadcrumbs);
+        model.addAttribute("breadcrumb-active", "Corrección");
+
+        return "report";
+    }
+
     @GetMapping("/report/{idReference}")
     public String reviewReport(Model model, @PathVariable long idReference){
         Project p = appService.getProjectById(idReference);
@@ -72,7 +97,7 @@ public class ReportController {
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
         breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
         model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrección");
+        model.addAttribute("breadcrumb-active", report.getStudentName());
 
         return "report";
     }
@@ -105,4 +130,9 @@ public class ReportController {
         return "report";
     }
 
+    @GetMapping("/report-global-review/{id}")
+    public String reportGlobalReview(Model model, @PathVariable long id){
+
+        return null;
+    }
 }
