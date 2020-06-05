@@ -138,8 +138,30 @@ public class ReportController {
 
     @GetMapping("/report-global-review/{id}")
     public String reportGlobalReview(Model model, @PathVariable long id){
+        Project p = appService.getProjectById(id);
+        LinkedList<Report> reports = reportService.getStoredGlobalReports(p);
 
-        return null;
+        model.addAttribute("global-report", true);
+        model.addAttribute("project-name", p.getName());
+        model.addAttribute("date", reports.getFirst().getDate());
+        model.addAttribute("reports", reports);
+
+        model.addAttribute("id-project", p.getId());
+        if (appService.userIsProfessor()) {
+            model.addAttribute("professor", true);
+            model.addAttribute("new-project-btn", true);
+        }
+        else
+            model.addAttribute("student", true);
+
+        //breadcrumb
+        LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
+        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" + id));
+        model.addAttribute("breadcrumb-list", breadcrumbs);
+        model.addAttribute("breadcrumb-active", "Corrección Global");
+
+        return "report";
     }
 
     @GetMapping("/download-jplag/{id}")

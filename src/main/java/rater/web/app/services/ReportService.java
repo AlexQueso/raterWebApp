@@ -311,4 +311,8 @@ public class ReportService {
         }
         return null;
     }
+
+    public LinkedList<Report> getStoredGlobalReports(Project p) {
+        return userSession.getGlobalReports().get(Long.toString(p.getId()));
+    }
 }

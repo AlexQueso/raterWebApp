@@ -57,13 +57,15 @@ public class AppController {
         Project p = appService.getProjectById(id);
         model.addAttribute("project", p);
 
-        if (appService.userIsProfessor())
+        if (appService.userIsProfessor()) {
             model.addAttribute("professor", true);
-        else
+            if (appService.globalReportAlreadyExists(p))
+                model.addAttribute("view-report", true);
+        }else {
             model.addAttribute("student", true);
-
-        if (appService.reportAlreadyExists(p.getName())){
-            model.addAttribute("view-report", true);
+            if (appService.reportAlreadyExists(p.getName())){
+                model.addAttribute("view-report", true);
+            }
         }
 
         //breadcrumb

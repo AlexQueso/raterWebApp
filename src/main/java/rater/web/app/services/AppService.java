@@ -189,4 +189,8 @@ public class AppService {
             e.printStackTrace();
         }
     }
+
+    public boolean globalReportAlreadyExists(Project p) {
+        return userSession.getGlobalReports().get(Long.toString(p.getId())) != null;
+    }
 }
