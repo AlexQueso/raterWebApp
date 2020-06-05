@@ -15,6 +15,7 @@ import rater.web.app.classes.Test;
 import rater.web.app.classes.TestCase;
 import rater.web.app.session.UserSession;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -28,6 +29,8 @@ public class ReportService {
     private String jarPath;
     @Value("${jplag.path}")
     private String jplagPath;
+    @Value("${jplagDir.path}")
+    private String jplagDirPath;
 
     private final UserSession userSession;
     private final AppService appService;
@@ -58,7 +61,7 @@ public class ReportService {
             }
             int exitVal = process.waitFor();
             if (exitVal != 0)
-                throw new RuntimeException("rater.jar failure, unable to rate " + projectPath +  " project");
+                throw new RuntimeException("rater.jar failure, unable to rate " + projectPath + " project");
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -77,22 +80,42 @@ public class ReportService {
 
         LinkedList<JSONObject> jsons = getIndividualJSONReports(p.getId());
         LinkedList<Report> reports = new LinkedList<>();
-        for (JSONObject j: jsons)
+        for (JSONObject j : jsons)
             reports.add(processJsonIndividualProject(j));
 
         userSession.getGlobalReports().put(Long.toString(p.getId()), reports);
+        saveJplagDirectory(p.getId());
         deleteFiles(Long.toString(p.getId()));
         return reports;
+    }
+
+    private void saveJplagDirectory(long id) {
+        File destination = new File (jplagDirPath + "/" + id);
+        File studentProjectsDir = new File(projectsPath);
+        String idProject = Long.toString(id);
+        for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
+            if (studentProject.getName().contains(idProject) && studentProject.isDirectory()) {
+                for (File jplagDir: Objects.requireNonNull(studentProject.listFiles())){
+                    if (jplagDir.getName().equals("Jplag")){
+                        try {
+                            FileUtils.copyDirectory(jplagDir, destination);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private LinkedList<JSONObject> getIndividualJSONReports(long id) {
         LinkedList<JSONObject> jsons = new LinkedList<>();
         File globalProjectDir = new File(projectsPath + "/" + id);
-        for (File f: Objects.requireNonNull(globalProjectDir.listFiles())){
-            if (!(f.getName().equals("Jplag")) && f.isDirectory()){
-                for(File studentProject: Objects.requireNonNull(f.listFiles())){
-                    for (File studentFile: Objects.requireNonNull(studentProject.listFiles())){
-                        if (studentFile.getName().equals("build_test_report.json")){
+        for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
+            if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
+                for (File studentProject : Objects.requireNonNull(f.listFiles())) {
+                    for (File studentFile : Objects.requireNonNull(studentProject.listFiles())) {
+                        if (studentFile.getName().equals("build_test_report.json")) {
                             jsons.add(fileToJSONObject(studentFile));
                             break;
                         }
@@ -105,19 +128,19 @@ public class ReportService {
 
     public String getProjectPath(String idProject) {
         File projectsDir = new File(projectsPath);
-        for (File f: Objects.requireNonNull(projectsDir.listFiles())){
-            if (f.getName().contains(idProject)){
+        for (File f : Objects.requireNonNull(projectsDir.listFiles())) {
+            if (f.getName().contains(idProject)) {
                 return f.getAbsolutePath();
             }
         }
-        throw new RuntimeException("Unable to find " + idProject +" in " + projectsPath);
+        throw new RuntimeException("Unable to find " + idProject + " in " + projectsPath);
     }
 
     private JSONObject getsingleJSONfromServiceExecution(String projectPath, String idProject) {
         File studentsProjectDir = new File(projectPath);
-        for (File f: Objects.requireNonNull(studentsProjectDir.listFiles())){
-            if (f.getName().equals(idProject) && f.isDirectory()){
-                for(File file: Objects.requireNonNull(f.listFiles())){
+        for (File f : Objects.requireNonNull(studentsProjectDir.listFiles())) {
+            if (f.getName().equals(idProject) && f.isDirectory()) {
+                for (File file : Objects.requireNonNull(f.listFiles())) {
                     if (file.getName().equals("build_test_report.json"))
                         return fileToJSONObject(file);
                 }
@@ -126,7 +149,7 @@ public class ReportService {
         throw new RuntimeException("unable to find json report in " + projectPath);
     }
 
-    private JSONObject fileToJSONObject(File file){
+    private JSONObject fileToJSONObject(File file) {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
         try (Reader reader = new FileReader(file.getPath())) {
@@ -138,11 +161,11 @@ public class ReportService {
         return jsonObject;
     }
 
-    private void deleteFiles(String idProject){
-        File studentProjectsDir = new File (projectsPath);
-        for (File f: Objects.requireNonNull(studentProjectsDir.listFiles())){
-            if (f.getName().contains(idProject)){
-                if (f.isDirectory()){
+    private void deleteFiles(String idProject) {
+        File studentProjectsDir = new File(projectsPath);
+        for (File f : Objects.requireNonNull(studentProjectsDir.listFiles())) {
+            if (f.getName().contains(idProject)) {
+                if (f.isDirectory()) {
                     try {
                         FileUtils.deleteDirectory(f);
                     } catch (IOException e) {
@@ -208,7 +231,7 @@ public class ReportService {
         return userSession.getStudentReports().get(p.getName());
     }
 
-    public void fillModelwithStudentRepor(Model model, Report report){
+    public void fillModelwithStudentRepor(Model model, Report report) {
 
         model.addAttribute("individual-report", true);
         //header
@@ -222,7 +245,7 @@ public class ReportService {
 
     }
 
-    private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag){
+    private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "java -jar " + jarPath + " " + option + " " + referencePath + " " + projectPath + " "
                 + referenceName + " " + jplag);
@@ -237,7 +260,7 @@ public class ReportService {
             }
             int exitVal = process.waitFor();
             if (exitVal != 0)
-                throw new RuntimeException("rater.jar failure, unable to rate " + projectPath +  " project");
+                throw new RuntimeException("rater.jar failure, unable to rate " + projectPath + " project");
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -246,10 +269,46 @@ public class ReportService {
 
     public Report getIndividualReport(long idReference, String studentName) {
         LinkedList<Report> reports = userSession.getGlobalReports().get(Long.toString(idReference));
-        for(Report r: reports)
+        for (Report r : reports)
             if (r.getStudentName().equals(studentName))
                 return r;
 
+        return null;
+    }
+
+    public HttpServletResponse getResponse(long id, HttpServletResponse response) throws IOException {
+
+        // get your file as InputStream
+        File initialFile = zipJplagDirectory(new File(jplagDirPath + "/" + id));
+        InputStream is = new FileInputStream(Objects.requireNonNull(initialFile));
+        // copy it to response's OutputStream
+        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+        return response;
+    }
+
+    private File zipJplagDirectory(File dir){
+        File zippedFile = null;
+        File f = new File(dir.getPath() + ".zip");
+        if (f.exists())
+            appService.deleteZippedFile(f);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("bash", "-c", "zip -r " + dir.getPath() + "_jplag.zip " + dir.getPath());
+        try {
+            Process process = processBuilder.start();
+            int exitVal = process.waitFor();
+            if (exitVal != 0)
+                throw new RuntimeException("Failure zipping: " + dir.getPath());
+
+            zippedFile = new File(dir.getPath() + ".zip");
+            if (zippedFile.exists())
+                return zippedFile;
+            else
+                throw new RuntimeException("Failure to zip directory: " + dir.getPath());
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Failure zipping: " + dir.getPath());
+        }
         return null;
     }
 }

@@ -182,7 +182,7 @@ public class AppService {
         }
     }
 
-    private void deleteZippedFile(File file){
+    public void deleteZippedFile(File file){
         try {
             FileUtils.forceDelete(file);
         } catch (IOException e) {
