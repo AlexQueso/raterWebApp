@@ -1,14 +1,25 @@
 package rater.web.app.classes;
 
+import javax.persistence.*;
 import java.util.LinkedList;
+import java.util.List;
 
+@Entity
 public class Test {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
     private int total;
     private int correct;
     private String testSuite;
-    private LinkedList<TestCase> testCases;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<TestCase> testCases;
     private String success;
+
+    public Test() {
+    }
 
     public int getTotal() {
         return total;
@@ -34,7 +45,7 @@ public class Test {
         this.testSuite = testSuite;
     }
 
-    public LinkedList<TestCase> getTestCases() {
+    public List<TestCase> getTestCases() {
         return testCases;
     }
 

@@ -14,10 +14,9 @@ import rater.web.app.services.AppService;
 import rater.web.app.services.ReportService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.List;
 
 @Controller
 public class ReportController {
@@ -101,7 +100,7 @@ public class ReportController {
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
         breadcrumbs.add(new Breadcrumb("Inicio", "/"));
         breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
-        breadcrumbs.add(new Breadcrumb("Corrección Global", "/global-report-review/" + idReference));
+        breadcrumbs.add(new Breadcrumb("Corrección Global", "/review-global-report/" + idReference));
         model.addAttribute("breadcrumb-list", breadcrumbs);
         model.addAttribute("breadcrumb-active", report.getStudentName());
 
@@ -136,14 +135,14 @@ public class ReportController {
         return "report";
     }
 
-    @GetMapping("/report-global-review/{id}")
+    @GetMapping("/review-global-report/{id}")
     public String reportGlobalReview(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
-        LinkedList<Report> reports = reportService.getStoredGlobalReports(p);
+        List<Report> reports = reportService.getStoredGlobalReports(p);
 
         model.addAttribute("global-report", true);
         model.addAttribute("project-name", p.getName());
-        model.addAttribute("date", reports.getFirst().getDate());
+        model.addAttribute("date", reports.get(0).getDate());
         model.addAttribute("reports", reports);
 
         model.addAttribute("id-project", p.getId());

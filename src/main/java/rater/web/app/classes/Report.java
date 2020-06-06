@@ -1,14 +1,22 @@
 package rater.web.app.classes;
 
+import javax.persistence.*;
 import java.util.LinkedList;
+import java.util.List;
 
+@Entity
 public class Report {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String projectName;
     private String date;
     private String studentName;
     private String build;
     private String buildSuccess;
-    private LinkedList<Test> tests;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Test> tests;
 
     public Report() {
         tests = new LinkedList<>();
@@ -46,7 +54,7 @@ public class Report {
         this.build = build;
     }
 
-    public LinkedList<Test> getTests() {
+    public List<Test> getTests() {
         return tests;
     }
 

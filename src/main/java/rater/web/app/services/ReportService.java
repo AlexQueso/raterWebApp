@@ -13,11 +13,13 @@ import rater.web.app.classes.Project;
 import rater.web.app.classes.Report;
 import rater.web.app.classes.Test;
 import rater.web.app.classes.TestCase;
+import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.session.UserSession;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -34,11 +36,13 @@ public class ReportService {
 
     private final UserSession userSession;
     private final AppService appService;
+    private final ProjectRepository projectRepository;
 
     @Autowired
-    public ReportService(UserSession userSession, AppService appService) {
+    public ReportService(UserSession userSession, AppService appService, ProjectRepository projectRepository) {
         this.userSession = userSession;
         this.appService = appService;
+        this.projectRepository = projectRepository;
     }
 
     public JSONObject rateStudentProject(long idReference, String idProject) {
@@ -84,6 +88,8 @@ public class ReportService {
             reports.add(processJsonIndividualProject(j));
 
         userSession.getGlobalReports().put(Long.toString(p.getId()), reports);
+        p.setReports(reports);
+        projectRepository.save(p);
         saveJplagDirectory(p.getId());
         deleteFiles(Long.toString(p.getId()));
         return reports;
@@ -268,7 +274,7 @@ public class ReportService {
     }
 
     public Report getIndividualReport(long idReference, String studentName) {
-        LinkedList<Report> reports = userSession.getGlobalReports().get(Long.toString(idReference));
+        List<Report> reports = appService.getProjectById(idReference).getReports();
         for (Report r : reports)
             if (r.getStudentName().equals(studentName))
                 return r;
@@ -312,7 +318,7 @@ public class ReportService {
         return null;
     }
 
-    public LinkedList<Report> getStoredGlobalReports(Project p) {
-        return userSession.getGlobalReports().get(Long.toString(p.getId()));
+    public List<Report> getStoredGlobalReports(Project p) {
+        return appService.getProjectById(p.getId()).getReports();
     }
 }

@@ -1,10 +1,9 @@
 package rater.web.app.classes;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,23 +16,28 @@ public class Project {
     private String name;
     private String description;
     private File pathToDirectory;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Report> reports;
 
     public Project(){}
 
     public Project (String name){
         this.name = name;
+        reports = new LinkedList<>();
     }
 
     public Project(String name, String description, File pathToDirectory) {
         this.name = name;
         this.description = description;
         this.pathToDirectory = pathToDirectory;
+        reports = new LinkedList<>();
     }
 
     public Project(String name, File pathToDirectory) {
         this.name = name;
         this.description = " ";
         this.pathToDirectory = pathToDirectory;
+        reports = new LinkedList<>();
     }
 
     public long getId() {
@@ -66,6 +70,14 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Report> getReports() {
+        return reports;
+    }
+
+    public void setReports(List<Report> reports) {
+        this.reports = reports;
     }
 
     @Override
