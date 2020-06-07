@@ -77,6 +77,12 @@
             </div>
         </div>
         {{/tests}}
+        {{#test-failure}}
+        <div class="panel panel-danger">
+            <div class="panel-heading">Error en la ejecución de los tests</div>
+            <div class="panel-body">{{test-failure-msg}}</div>
+        </div>
+        {{/test-failure}}
     </div>
     {{/individual-report}}
 

@@ -17,6 +17,7 @@ import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.session.UserSession;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,37 +196,47 @@ public class ReportService {
             r.setBuildSuccess("danger");
         if (json.get("studentName") != null)
             r.setStudentName((String) json.get("studentName"));
+
         LinkedList<Test> testLinkedList = new LinkedList<>();
+        if (json.get("test") instanceof JSONArray) {
+            JSONArray tests = (JSONArray) json.get("test");
+            for (Object o : tests) {
+                JSONObject jsonTest = (JSONObject) o;
+                Test test = new Test();
+                test.setTotal(Math.toIntExact((Long) jsonTest.get("total")));
+                test.setCorrect(Math.toIntExact((Long) jsonTest.get("correct")));
+                test.setTestSuite((String) jsonTest.get("testSuite"));
+                if (test.getCorrect() == test.getTotal())
+                    test.setSuccess("success");
+                else
+                    test.setSuccess("danger");
 
-        JSONArray tests = (JSONArray) json.get("test");
-        for (Object o : tests) {
-            JSONObject jsonTest = (JSONObject) o;
-            Test test = new Test();
-            test.setTotal(Math.toIntExact((Long) jsonTest.get("total")));
-            test.setCorrect(Math.toIntExact((Long) jsonTest.get("correct")));
-            test.setTestSuite((String) jsonTest.get("testSuite"));
-            if (test.getCorrect() == test.getTotal())
-                test.setSuccess("success");
-            else
-                test.setSuccess("danger");
+                if (test.getTotal() > test.getCorrect()) {
+                    LinkedList<TestCase> testCasesLinkedList = new LinkedList<>();
 
-            if (test.getTotal() > test.getCorrect()) {
-                LinkedList<TestCase> testCasesLinkedList = new LinkedList<>();
-
-                JSONArray testCases = (JSONArray) jsonTest.get("testCases");
-                for (Object aCase : testCases) {
-                    JSONObject jsonTestCase = (JSONObject) aCase;
-                    TestCase testCase = new TestCase();
-                    testCase.setTrace((String) jsonTestCase.get("trace"));
-                    testCase.setCause((String) jsonTestCase.get("cause"));
-                    testCase.setTestName((String) jsonTestCase.get("testName"));
-                    testCasesLinkedList.add(testCase);
+                    JSONArray testCases = (JSONArray) jsonTest.get("testCases");
+                    for (Object aCase : testCases) {
+                        JSONObject jsonTestCase = (JSONObject) aCase;
+                        TestCase testCase = new TestCase();
+                        testCase.setTrace((String) jsonTestCase.get("trace"));
+                        testCase.setCause((String) jsonTestCase.get("cause"));
+                        testCase.setTestName((String) jsonTestCase.get("testName"));
+                        testCasesLinkedList.add(testCase);
+                    }
+                    test.setTestCases(testCasesLinkedList);
                 }
-                test.setTestCases(testCasesLinkedList);
+                testLinkedList.add(test);
             }
+            r.setTests(testLinkedList);
+        } else {
+            Test test = new Test();
+            test.setTotal(-1);
+            test.setCorrect(0);
+            test.setSuccess("danger");
+            test.setTestSuite((String) json.get("test"));
             testLinkedList.add(test);
+            r.setTests(testLinkedList);
         }
-        r.setTests(testLinkedList);
         return r;
     }
 
@@ -247,7 +258,12 @@ public class ReportService {
         model.addAttribute("build-success", report.getBuildSuccess());
         model.addAttribute("build", report.getBuild());
         //tests
-        model.addAttribute("tests", report.getTests());
+        if (report.getTests().get(0).getTotal() == -1) {
+            model.addAttribute("tests", false);
+            model.addAttribute("test-failure", true);
+            model.addAttribute("test-failure-msg", report.getTests().get(0).getTestSuite());
+        }else
+            model.addAttribute("tests", report.getTests());
 
     }
 
