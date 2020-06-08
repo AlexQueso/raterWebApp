@@ -105,6 +105,8 @@ public class AppService {
             Path path = Paths.get(referencesPath + "/" + id + ".zip");
             File zippedProject = path.toFile();
             Files.write(path, bytes);
+            //guardar array de bytes en el proyecto
+            project.setReferenceFile(bytes);
             //unzipear el proyecto
             File referenceProjectDir = unzipReferenceProject(zippedProject, new File(referencesPath));
             //eliminar el fichero zipeado y quedarse solo con el directorio unzippeado

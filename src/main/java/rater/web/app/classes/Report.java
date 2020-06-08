@@ -17,6 +17,9 @@ public class Report {
     private String buildSuccess;
     @OneToMany(cascade=CascadeType.ALL)
     private List<Test> tests;
+    @Lob
+    @Column(length=200000)
+    private byte[] srcFile;
 
     public Report() {
         tests = new LinkedList<>();
@@ -68,5 +71,25 @@ public class Report {
 
     public void setBuildSuccess(String buildSuccess) {
         this.buildSuccess = buildSuccess;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
+
+    public byte[] getSrcFile() {
+        return srcFile;
+    }
+
+    public void setSrcFile(byte[] srcFile) {
+        this.srcFile = srcFile;
     }
 }

@@ -2,6 +2,7 @@ package rater.web.app.classes;
 
 import javax.persistence.*;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,12 @@ public class Project {
     private File pathToDirectory;
     @OneToMany(cascade=CascadeType.ALL)
     private List<Report> reports;
+    @Lob
+    @Column(length=500000)
+    private byte[] referenceFile;
+    @Lob
+    @Column(length=500000)
+    private byte[] jplagReport;
 
     public Project(){}
 
@@ -78,6 +85,22 @@ public class Project {
 
     public void setReports(List<Report> reports) {
         this.reports = reports;
+    }
+
+    public byte[] getReferenceFile() {
+        return referenceFile;
+    }
+
+    public void setReferenceFile(byte[] referenceFile) {
+        this.referenceFile = referenceFile;
+    }
+
+    public byte[] getJplagReport() {
+        return jplagReport;
+    }
+
+    public void setJplagReport(byte[] jplagReport) {
+        this.jplagReport = jplagReport;
     }
 
     @Override

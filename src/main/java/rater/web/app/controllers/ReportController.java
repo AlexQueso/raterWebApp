@@ -92,6 +92,7 @@ public class ReportController {
         if (appService.userIsProfessor()) {
             model.addAttribute("professor", true);
             model.addAttribute("new-project-btn", true);
+            model.addAttribute("id-report", report.getId());
         }
         else
             model.addAttribute("student", true);
@@ -138,7 +139,7 @@ public class ReportController {
     @GetMapping("/review-global-report/{id}")
     public String reportGlobalReview(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
-        List<Report> reports = reportService.getStoredGlobalReports(p);
+        List<Report> reports = p.getReports();
 
         model.addAttribute("global-report", true);
         model.addAttribute("project-name", p.getName());
@@ -164,9 +165,18 @@ public class ReportController {
     }
 
     @GetMapping("/download-jplag/{id}")
-    public void getFile(@PathVariable long id, HttpServletResponse response) {
+    public void downloadJplagReport(@PathVariable long id, HttpServletResponse response) {
         try {
-            reportService.getResponse(id, response).flushBuffer();
+            reportService.getJplagReport(id, response).flushBuffer();
+        } catch (IOException ex) {
+            throw new RuntimeException("IOError writing file to output stream");
+        }
+    }
+
+    @GetMapping("/download-src/{id}")
+    public void downloadSrc(@PathVariable long id, HttpServletResponse response){
+        try {
+            reportService.getReportSrc(id, response).flushBuffer();
         } catch (IOException ex) {
             throw new RuntimeException("IOError writing file to output stream");
         }
