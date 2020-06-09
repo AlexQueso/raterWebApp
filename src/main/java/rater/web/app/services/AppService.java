@@ -95,28 +95,36 @@ public class AppService {
     }
 
     public void createProject(Project project, MultipartFile file) {
+        projectRepository.save(project);
+        setReferenceProject(project, file);
+    }
+
+    private void setReferenceProject(Project p, MultipartFile file){
         try {
-            projectRepository.save(project);
-            long id = project.getId();
-            //crear carpeta en /references cuyo nombre sea el id del proyecto en la base de datos
-            File newReference = new File(referencesPath + "/" + id);
-            //copiar el fichero zip en esa carpeta
+            long id = p.getId();
             byte[] bytes = file.getBytes();
             Path path = Paths.get(referencesPath + "/" + id + ".zip");
             File zippedProject = path.toFile();
             Files.write(path, bytes);
-            //guardar array de bytes en el proyecto
-            project.setReferenceFile(bytes);
-            //unzipear el proyecto
+            p.setReferenceFile(bytes);
             File referenceProjectDir = unzipReferenceProject(zippedProject, new File(referencesPath));
-            //eliminar el fichero zipeado y quedarse solo con el directorio unzippeado
             deleteZippedFile(zippedProject);
-            //cambiar el fichero build.properties del proyecto
             replaceNbProjectFiles(referenceProjectDir);
+            p.setPathToDirectory(referenceProjectDir);
+            projectRepository.save(p);
 
-            project.setPathToDirectory(referenceProjectDir);
-            projectRepository.save(project);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void updateProject(long id, MultipartFile file) {
+        Project p = getProjectById(id);
+        try {
+            if (p.getPathToDirectory()!=null)
+                if (p.getPathToDirectory().exists())
+                    FileUtils.deleteDirectory(p.getPathToDirectory());
+            setReferenceProject(p, file);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -195,4 +203,6 @@ public class AppService {
     public boolean globalReportAlreadyExists(Project p) {
         return userSession.getGlobalReports().get(Long.toString(p.getId())) != null;
     }
+
+
 }

@@ -65,6 +65,8 @@
                             <div class="col-xs-6 text-left">
                                 <a onclick="return confirmDelete();" class="btn btn-danger"
                                    href="/delete-project/{{id}}" role="button">Borrar</a>
+                                <a class="btn btn-danger"
+                                   href="/actualizar-practica/{{id}}" role="button">Actualizar</a>
                             </div>
                             {{/professor}}
                             <div class="col-sx-6 text-right">
@@ -263,5 +265,44 @@
         </div>
     </div>
     {{/new-project}}
+
+    {{#update-project}}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-4">
+                <div class="panel border-bottom">
+                    {{#professor}}
+                    <div class="panel heading">
+                        <h3>Actualizar práctica</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form action="/updating-project/{{id-project}}" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Seleccione nuevo proyecto de referencia</label>
+                                <input id="inputfile-new-project" type="file" name="file" required>
+                                <p class="help-block">Formato zip</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-xs-offset-8 text-right">
+                                    <div class="container-fluid">
+                                        <button type="submit" class="btn btn-default text-right"
+                                                onclick="return newProjectButton()">Actualizar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {{/professor}}
+                    {{#student}}
+                    <div class="panel-heading">
+                        <h3>Volver al inicio</h3>
+                        <a href="/" class="btn btn-default" role="button">Volver</a>
+                    </div>
+                    {{/student}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/update-project}}
 </body>
 </html>

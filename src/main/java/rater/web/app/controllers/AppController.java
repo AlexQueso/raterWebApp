@@ -95,7 +95,12 @@ public class AppController {
     @PostMapping("/crear-practica")
     public String saveNewProject(Project project, @RequestParam("file") MultipartFile file){
         appService.createProject(project, file);
+        return Utils.redirectTo("/");
+    }
 
+    @PostMapping("/updating-project/{id}")
+    public String updatingProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
+        appService.updateProject(id, file);
         return Utils.redirectTo("/");
     }
 
@@ -118,5 +123,24 @@ public class AppController {
     public String deleteProject(@PathVariable long id){
         appService.deleteProjectById(id);
         return Utils.redirectTo("/");
+    }
+
+    @GetMapping("/actualizar-practica/{id}")
+    public String updateProject(@PathVariable long id, Model model){
+        model.addAttribute("update-project", true);
+        model.addAttribute("id-project", id);
+
+        if (appService.userIsProfessor())
+            model.addAttribute("professor", true);
+        else
+            model.addAttribute("student", true);
+
+        //breadcrumb
+        LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
+        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
+        model.addAttribute("breadcrumb-list", breadcrumbs);
+        model.addAttribute("breadcrumb-active", "Actualizar Práctica");
+
+        return "app";
     }
 }

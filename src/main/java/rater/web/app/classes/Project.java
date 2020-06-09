@@ -20,10 +20,10 @@ public class Project {
     @OneToMany(cascade=CascadeType.ALL)
     private List<Report> reports;
     @Lob
-    @Column(length=500000)
+    @Column(length=1048576) //1MB
     private byte[] referenceFile;
     @Lob
-    @Column(length=500000)
+    @Column(length=524288) //500KB
     private byte[] jplagReport;
 
     public Project(){}
