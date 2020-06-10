@@ -33,8 +33,6 @@ public class ReportService {
     private String jarPath;
     @Value("${jplag.path}")
     private String jplagPath;
-//    @Value("${jplagDir.path}")
-//    private String jplagDirPath;
 
     private final UserSession userSession;
     private final AppService appService;
@@ -129,7 +127,6 @@ public class ReportService {
     }
 
     private void saveJplagDirectory(Project p) {
-//        File destination = new File (jplagDirPath + "/" + p.getId());
         File studentProjectsDir = new File(projectsPath);
         String idProject = Long.toString(p.getId());
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
@@ -137,7 +134,6 @@ public class ReportService {
                 for (File jplagDir: Objects.requireNonNull(studentProject.listFiles())){
                     if (jplagDir.getName().equals("Jplag")){
                         try {
-                            //FileUtils.copyDirectory(jplagDir, destination);
                             File zipJplag = zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
                             byte[] bytes = Files.readAllBytes(zipJplag.toPath());
                             p.setJplagReport(bytes);
@@ -335,12 +331,8 @@ public class ReportService {
     }
 
     public HttpServletResponse getJplagReport(long id, HttpServletResponse response) throws IOException {
-        // get your file as InputStream
-//        File initialFile = zipJplagDirectory(new File(jplagDirPath + "/" + id));
-//        InputStream is = new FileInputStream(Objects.requireNonNull(initialFile));
         byte[] initialFile = projectRepository.findById(id).getJplagReport();
         InputStream is = new ByteArrayInputStream(initialFile);
-        // copy it to response's OutputStream
         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
         return response;
     }

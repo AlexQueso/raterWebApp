@@ -37,19 +37,19 @@ public class AppService {
         this.projectRepository = projectRepository;
     }
 
-    @PostConstruct
-    public void initDataBase(){
-        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File("/home/alex/Desktop/projects/references/1/Practica2_2019"));
-        Project p2 = new Project("Práctica 2", "", new File(""));
-        Project p3 = new Project("Práctica 3", "Diccionarios Ordenados", new File(""));
-        Project p4 = new Project("Examen Final", "Convocatoria ordinaria", new File(""));
-        Project p5 = new Project("Examen Final", "Convocatoria extraordinaria", new File(""));
-        projectRepository.save(p1);
-        projectRepository.save(p2);
-        projectRepository.save(p3);
-        projectRepository.save(p4);
-        projectRepository.save(p5);
-    }
+//    @PostConstruct
+//    public void initDataBase(){
+//        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File("/home/alex/Desktop/projects/references/1/Practica2_2019"));
+//        Project p2 = new Project("Práctica 2", "", new File(""));
+//        Project p3 = new Project("Práctica 3", "Diccionarios Ordenados", new File(""));
+//        Project p4 = new Project("Examen Final", "Convocatoria ordinaria", new File(""));
+//        Project p5 = new Project("Examen Final", "Convocatoria extraordinaria", new File(""));
+//        projectRepository.save(p1);
+//        projectRepository.save(p2);
+//        projectRepository.save(p3);
+//        projectRepository.save(p4);
+//        projectRepository.save(p5);
+//    }
 
     public boolean userIsProfessor() {
         return userSession.isProfessor();
@@ -64,6 +64,14 @@ public class AppService {
     }
 
     public void deleteProjectById(long id){
+        Project p = getProjectById(id);
+        try {
+            if (p.getPathToDirectory()!=null)
+                if (p.getPathToDirectory().exists())
+                    FileUtils.deleteDirectory(p.getPathToDirectory());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         projectRepository.deleteById(id);
     }
 
@@ -123,7 +131,7 @@ public class AppService {
         try {
             if (p.getPathToDirectory()!=null)
                 if (p.getPathToDirectory().exists())
-                    FileUtils.deleteDirectory(p.getPathToDirectory());
+                    FileUtils.deleteDirectory(p.getPathToDirectory().getParentFile());
             setReferenceProject(p, file);
         } catch (IOException e) {
             e.printStackTrace();

@@ -20,8 +20,6 @@ import java.util.Objects;
 @Controller
 public class AppController {
 
-    private static String UPLOADED_FOLDER = "/home/alex/Desktop/projects/";
-
     public final AppService appService;
 
     @Autowired
