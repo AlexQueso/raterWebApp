@@ -39,7 +39,7 @@ public class AppService {
 
     @PostConstruct
     public void initDataBase(){
-        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File("/home/alex/Desktop/projects/references/practica_1"));
+        Project p1 = new Project("Práctica 1", "Árboles n-arios y binarios", new File("/home/alex/Desktop/projects/references/1/Practica2_2019"));
         Project p2 = new Project("Práctica 2", "", new File(""));
         Project p3 = new Project("Práctica 3", "Diccionarios Ordenados", new File(""));
         Project p4 = new Project("Examen Final", "Convocatoria ordinaria", new File(""));
@@ -203,6 +203,5 @@ public class AppService {
     public boolean globalReportAlreadyExists(Project p) {
         return userSession.getGlobalReports().get(Long.toString(p.getId())) != null;
     }
-
-
+    
 }

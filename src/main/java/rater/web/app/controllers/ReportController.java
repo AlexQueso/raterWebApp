@@ -2,7 +2,6 @@ package rater.web.app.controllers;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +20,6 @@ import java.util.List;
 @Controller
 public class ReportController {
 
-    @Value("${jplagDir.path}")
-    private String jplagDirPath;
     public final ReportService reportService;
     public final AppService appService;
 

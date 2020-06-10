@@ -33,8 +33,8 @@ public class ReportService {
     private String jarPath;
     @Value("${jplag.path}")
     private String jplagPath;
-    @Value("${jplagDir.path}")
-    private String jplagDirPath;
+//    @Value("${jplagDir.path}")
+//    private String jplagDirPath;
 
     private final UserSession userSession;
     private final AppService appService;
@@ -129,7 +129,7 @@ public class ReportService {
     }
 
     private void saveJplagDirectory(Project p) {
-        File destination = new File (jplagDirPath + "/" + p.getId());
+//        File destination = new File (jplagDirPath + "/" + p.getId());
         File studentProjectsDir = new File(projectsPath);
         String idProject = Long.toString(p.getId());
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
@@ -137,8 +137,8 @@ public class ReportService {
                 for (File jplagDir: Objects.requireNonNull(studentProject.listFiles())){
                     if (jplagDir.getName().equals("Jplag")){
                         try {
-                            FileUtils.copyDirectory(jplagDir, destination);
-                            File zipJplag = zipDirectory(destination, new File(destination.getPath()+"_jplag.zip"));
+                            //FileUtils.copyDirectory(jplagDir, destination);
+                            File zipJplag = zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
                             byte[] bytes = Files.readAllBytes(zipJplag.toPath());
                             p.setJplagReport(bytes);
                             break;
@@ -336,46 +336,20 @@ public class ReportService {
 
     public HttpServletResponse getJplagReport(long id, HttpServletResponse response) throws IOException {
         // get your file as InputStream
-        File initialFile = zipJplagDirectory(new File(jplagDirPath + "/" + id));
-        InputStream is = new FileInputStream(Objects.requireNonNull(initialFile));
-        // copy it to response's OutputStream
-        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-        return response;
-    }
-
-    public HttpServletResponse getReportSrc(long idReport, HttpServletResponse response) throws IOException {
-        // get your file as InputStream
-        byte[] initialFile = reportRepository.findById(idReport).getSrcFile();
+//        File initialFile = zipJplagDirectory(new File(jplagDirPath + "/" + id));
+//        InputStream is = new FileInputStream(Objects.requireNonNull(initialFile));
+        byte[] initialFile = projectRepository.findById(id).getJplagReport();
         InputStream is = new ByteArrayInputStream(initialFile);
         // copy it to response's OutputStream
         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
         return response;
     }
 
-    private File zipJplagDirectory(File dir){
-        File zippedFile = null;
-        File f = new File(dir.getPath() + "_jplag.zip");
-        if (f.exists())
-            appService.deleteZippedFile(f);
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "zip -r " + dir.getPath() + "_jplag.zip " + dir.getPath());
-        try {
-            Process process = processBuilder.start();
-            int exitVal = process.waitFor();
-            if (exitVal != 0)
-                throw new RuntimeException("Failure zipping: " + dir.getPath());
-
-            zippedFile = new File(dir.getPath() + ".zip");
-            if (zippedFile.exists())
-                return zippedFile;
-            else
-                throw new RuntimeException("Failure to zip directory: " + dir.getPath());
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            System.err.println("Failure zipping: " + dir.getPath());
-        }
-        return null;
+    public HttpServletResponse getReportSrc(long idReport, HttpServletResponse response) throws IOException {
+        byte[] initialFile = reportRepository.findById(idReport).getSrcFile();
+        InputStream is = new ByteArrayInputStream(initialFile);
+        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+        return response;
     }
 
     private File zipDirectory (File dir, File destination){
