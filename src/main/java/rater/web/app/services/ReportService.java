@@ -1,10 +1,7 @@
 package rater.web.app.services;
 
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +13,7 @@ import rater.web.app.classes.TestCase;
 import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.repositories.ReportRepository;
 import rater.web.app.session.UserSession;
+import rater.web.app.utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -52,28 +50,8 @@ public class ReportService {
         String referencePath = p.getPathToDirectory().getAbsolutePath();
         String projectPath = getProjectPath(idProject);
         String referenceName = p.getName().replace(" ", "_");
-
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "java -jar " + jarPath + " -p " + referencePath + " " + projectPath + " "
-                + referenceName);
-        try {
-            Process process = processBuilder.start();
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            int exitVal = process.waitFor();
-            if (exitVal != 0)
-                throw new RuntimeException("rater.jar failure, unable to rate " + projectPath + " project");
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject json = getsingleJSONfromServiceExecution(projectsPath, idProject);
+        executeRater("-p", referencePath, projectPath, referenceName, "");
+        JSONObject json = getIndividualJSONReport(projectsPath, idProject);
         deleteFiles(idProject);
         return json;
     }
@@ -89,16 +67,16 @@ public class ReportService {
         for (JSONObject j : jsons)
             reports.add(processJsonIndividualProject(j));
 
-        storeSrcDirectoriesInDB(reports, p.getId());
+        saveSrc(reports, p.getId());
         userSession.getGlobalReports().put(Long.toString(p.getId()), reports);
         p.setReports(reports);
-        saveJplagDirectory(p);
+        saveJplagReport(p);
         projectRepository.save(p);
         deleteFiles(Long.toString(p.getId()));
         return reports;
     }
 
-    private void storeSrcDirectoriesInDB(LinkedList<Report> reports, long id) {
+    private void saveSrc(LinkedList<Report> reports, long id) {
         File globalProjectDir = new File(projectsPath + "/" + id);
         for (File f: Objects.requireNonNull(globalProjectDir.listFiles())) {
             if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
@@ -108,7 +86,7 @@ public class ReportService {
                             for (File studentFile : Objects.requireNonNull(studentProject.listFiles())){
                                 if (studentFile.getName().equals("src")){
                                     try {
-                                        File zipSrc = zipDirectory(studentFile, new File(studentFile.getPath()+".zip"));
+                                        File zipSrc = Utils.zipDirectory(studentFile, new File(studentFile.getPath()+".zip"));
                                         byte[] bytes = Files.readAllBytes(zipSrc.toPath());
                                         r.setSrcFile(bytes);
                                         break;
@@ -126,7 +104,7 @@ public class ReportService {
         }
     }
 
-    private void saveJplagDirectory(Project p) {
+    private void saveJplagReport(Project p) {
         File studentProjectsDir = new File(projectsPath);
         String idProject = Long.toString(p.getId());
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
@@ -134,7 +112,7 @@ public class ReportService {
                 for (File jplagDir: Objects.requireNonNull(studentProject.listFiles())){
                     if (jplagDir.getName().equals("Jplag")){
                         try {
-                            File zipJplag = zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
+                            File zipJplag = Utils.zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
                             byte[] bytes = Files.readAllBytes(zipJplag.toPath());
                             p.setJplagReport(bytes);
                             break;
@@ -147,6 +125,19 @@ public class ReportService {
         }
     }
 
+    private JSONObject getIndividualJSONReport(String projectPath, String idProject) {
+        File studentsProjectDir = new File(projectPath);
+        for (File f : Objects.requireNonNull(studentsProjectDir.listFiles())) {
+            if (f.getName().equals(idProject) && f.isDirectory()) {
+                for (File file : Objects.requireNonNull(f.listFiles())) {
+                    if (file.getName().equals("build_test_report.json"))
+                        return Utils.fileToJSONObject(file);
+                }
+            }
+        }
+        throw new RuntimeException("unable to find json report in " + projectPath);
+    }
+
     private LinkedList<JSONObject> getIndividualJSONReports(long id) {
         LinkedList<JSONObject> jsons = new LinkedList<>();
         File globalProjectDir = new File(projectsPath + "/" + id);
@@ -155,7 +146,7 @@ public class ReportService {
                 for (File studentProject : Objects.requireNonNull(f.listFiles())) {
                     for (File studentFile : Objects.requireNonNull(studentProject.listFiles())) {
                         if (studentFile.getName().equals("build_test_report.json")) {
-                            jsons.add(fileToJSONObject(studentFile));
+                            jsons.add(Utils.fileToJSONObject(studentFile));
                             break;
                         }
                     }
@@ -175,41 +166,12 @@ public class ReportService {
         throw new RuntimeException("Unable to find " + idProject + " in " + projectsPath);
     }
 
-    private JSONObject getsingleJSONfromServiceExecution(String projectPath, String idProject) {
-        File studentsProjectDir = new File(projectPath);
-        for (File f : Objects.requireNonNull(studentsProjectDir.listFiles())) {
-            if (f.getName().equals(idProject) && f.isDirectory()) {
-                for (File file : Objects.requireNonNull(f.listFiles())) {
-                    if (file.getName().equals("build_test_report.json"))
-                        return fileToJSONObject(file);
-                }
-            }
-        }
-        throw new RuntimeException("unable to find json report in " + projectPath);
-    }
-
-    private JSONObject fileToJSONObject(File file) {
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = null;
-        try (Reader reader = new FileReader(file.getPath())) {
-            jsonObject = (JSONObject) parser.parse(reader);
-            System.out.println(jsonObject);
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
     private void deleteFiles(String idProject) {
         File studentProjectsDir = new File(projectsPath);
         for (File f : Objects.requireNonNull(studentProjectsDir.listFiles())) {
             if (f.getName().contains(idProject)) {
                 if (f.isDirectory()) {
-                    try {
-                        FileUtils.deleteDirectory(f);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Utils.deleteDirectory(f);
                 } else {
                     f.delete();
                 }
@@ -222,12 +184,14 @@ public class ReportService {
         r.setProjectName(((String) json.get("projectName")).replace("_", " "));
         r.setDate(((String) json.get("date")).replace("-", ""));
         r.setBuild((String) json.get("build"));
+
+        if (json.get("studentName") != null)
+            r.setStudentName((String) json.get("studentName"));
+
         if (r.getBuild().contains("SUCCESS"))
             r.setBuildSuccess("success");
         else
             r.setBuildSuccess("danger");
-        if (json.get("studentName") != null)
-            r.setStudentName((String) json.get("studentName"));
 
         LinkedList<Test> testLinkedList = new LinkedList<>();
         if (json.get("test") instanceof JSONArray) {
@@ -259,7 +223,6 @@ public class ReportService {
                 }
                 testLinkedList.add(test);
             }
-            r.setTests(testLinkedList);
         } else {
             Test test = new Test();
             test.setTotal(-1);
@@ -267,21 +230,20 @@ public class ReportService {
             test.setSuccess("danger");
             test.setTestSuite((String) json.get("test"));
             testLinkedList.add(test);
-            r.setTests(testLinkedList);
         }
+        r.setTests(testLinkedList);
         return r;
     }
 
-    public void saveReportUserSession(Project p, Report report) {
+    public void saveReportInUserSession(Project p, Report report) {
         userSession.getStudentReports().put(p.getName(), report);
     }
 
-    public Report getStoredReport(Project p, long idReference) {
+    public Report getReportFromUserSession(Project p, long idReference) {
         return userSession.getStudentReports().get(p.getName());
     }
 
     public void fillModelwithStudentRepor(Model model, Report report) {
-
         model.addAttribute("individual-report", true);
         //header
         model.addAttribute("project-name", report.getProjectName());
@@ -296,13 +258,12 @@ public class ReportService {
             model.addAttribute("test-failure-msg", report.getTests().get(0).getTestSuite());
         }else
             model.addAttribute("tests", report.getTests());
-
     }
 
     private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", "java -jar " + jarPath + " " + option + " " + referencePath + " " + projectPath + " "
-                + referenceName + " " + jplag);
+        processBuilder.command("bash", "-c", "java -jar " + jarPath + " " + option + " " + referencePath + " " +
+                projectPath + " " + referenceName + " " + jplag);
         try {
             Process process = processBuilder.start();
             System.out.println(processBuilder.command().get(2));
@@ -327,42 +288,24 @@ public class ReportService {
             if (r.getStudentName().equals(studentName))
                 return r;
 
-        return null;
+        throw new RuntimeException("Unable to find individual report: " + studentName);
     }
 
-    public HttpServletResponse getJplagReport(long id, HttpServletResponse response) throws IOException {
+    public HttpServletResponse downloadJplagReport(long id, HttpServletResponse response) throws IOException {
         byte[] initialFile = projectRepository.findById(id).getJplagReport();
         InputStream is = new ByteArrayInputStream(initialFile);
         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
         return response;
     }
 
-    public HttpServletResponse getReportSrc(long idReport, HttpServletResponse response) throws IOException {
+    public HttpServletResponse downloadStudentSrc(long idReport, HttpServletResponse response) throws IOException {
         byte[] initialFile = reportRepository.findById(idReport).getSrcFile();
         InputStream is = new ByteArrayInputStream(initialFile);
         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
         return response;
     }
 
-    private File zipDirectory (File dir, File destination){
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder();
-            processBuilder.command("bash", "-c", "zip -r " + destination.getPath() + " " + dir.getPath());
-            Process process = processBuilder.start();
-            int exitVal = process.waitFor();
-            if (exitVal != 0)
-                throw new RuntimeException("Failure zipping: " + dir.getPath());
-            if (!destination.exists())
-                throw new RuntimeException("Failure zipping: " + dir.getPath());
-
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            System.err.println("Failure zipping: " + dir.getPath());
-        }
-        return destination;
-    }
-
-    public List<Report> getStoredGlobalReports(Project p) {
+    public List<Report> getGlobalReports(Project p) {
         return appService.getProjectById(p.getId()).getReports();
     }
 }

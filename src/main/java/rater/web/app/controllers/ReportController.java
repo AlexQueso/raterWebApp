@@ -34,7 +34,7 @@ public class ReportController {
         Project p = appService.getProjectById(idReference);
         JSONObject jsonReport = reportService.rateStudentProject(idReference, idProject);
         Report report = reportService.processJsonIndividualProject(jsonReport);
-        reportService.saveReportUserSession(p, report);
+        reportService.saveReportInUserSession(p, report);
         reportService.fillModelwithStudentRepor(model, report);
 
         model.addAttribute("id-project", p.getId());
@@ -58,7 +58,7 @@ public class ReportController {
     @GetMapping("/report/{idReference}")
     public String reviewReport(Model model, @PathVariable long idReference){
         Project p = appService.getProjectById(idReference);
-        Report report = reportService.getStoredReport(p, idReference);
+        Report report = reportService.getReportFromUserSession(p, idReference);
         reportService.fillModelwithStudentRepor(model, report);
 
         model.addAttribute("id-project", p.getId());
@@ -164,7 +164,7 @@ public class ReportController {
     @GetMapping("/download-jplag/{id}")
     public void downloadJplagReport(@PathVariable long id, HttpServletResponse response) {
         try {
-            reportService.getJplagReport(id, response).flushBuffer();
+            reportService.downloadJplagReport(id, response).flushBuffer();
         } catch (IOException ex) {
             throw new RuntimeException("IOError writing file to output stream");
         }
@@ -173,7 +173,7 @@ public class ReportController {
     @GetMapping("/download-src/{id}")
     public void downloadSrc(@PathVariable long id, HttpServletResponse response){
         try {
-            reportService.getReportSrc(id, response).flushBuffer();
+            reportService.downloadStudentSrc(id, response).flushBuffer();
         } catch (IOException ex) {
             throw new RuntimeException("IOError writing file to output stream");
         }

@@ -13,6 +13,7 @@ import rater.web.app.classes.Project;
 import rater.web.app.services.AppService;
 import rater.web.app.utils.Utils;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -104,17 +105,27 @@ public class AppController {
 
     @PostMapping(value = "/rate-project/{id}")
     public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
-        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".zip")){
+        String studentProjectId = null;
+        try {
+            studentProjectId = appService.uploadProject(id, file);
+            return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
+        } catch (IOException e) {
+            System.err.println("Problem while uploading student project files");
+            e.printStackTrace();
             return Utils.redirectTo("/practica/" + id);
         }
-        String studentProjectId = appService.uploadProject(id, file);
-        return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
     }
 
     @PostMapping(value = "/rate-all-projects/{id}")
     public String rateAllProjects(@PathVariable long id, @RequestParam("file") MultipartFile file){
-        appService.uploadProjectSet(id, file);
-        return Utils.redirectTo("/report-global/" + id);
+        try {
+            appService.uploadProjectSet(id, file);
+            return Utils.redirectTo("/report-global/" + id);
+        } catch (IOException e) {
+            System.err.println("Problem while uploading a set of student projects");
+            e.printStackTrace();
+            return Utils.redirectTo("/practica/" + id);
+        }
     }
 
     @GetMapping("/delete-project/{id}")
