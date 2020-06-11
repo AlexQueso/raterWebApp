@@ -45,6 +45,12 @@ public class ReportService {
         this.reportRepository = reportRepository;
     }
 
+    /**
+     * rate student project
+     * @param idReference reference project id
+     * @param idProject student project id
+     * @return Json report
+     */
     public JSONObject rateStudentProject(long idReference, String idProject) {
         Project p = appService.getProjectById(idReference);
         String referencePath = p.getPathToDirectory().getAbsolutePath();
@@ -56,6 +62,11 @@ public class ReportService {
         return json;
     }
 
+    /**
+     * rate a set of student projects
+     * @param p reference project
+     * @return json report list
+     */
     public LinkedList<Report> rateAllStudentProjects(Project p) {
         String referencePath = p.getPathToDirectory().getAbsolutePath();
         String projectPath = getProjectPath(Long.toString(p.getId()));
@@ -76,6 +87,11 @@ public class ReportService {
         return reports;
     }
 
+    /**
+     * Save student src files in database
+     * @param reports report list
+     * @param id reference project id
+     */
     private void saveSrc(LinkedList<Report> reports, long id) {
         File globalProjectDir = new File(projectsPath + "/" + id);
         for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
@@ -104,6 +120,10 @@ public class ReportService {
         }
     }
 
+    /**
+     * save Jplag report in database
+     * @param p reference project
+     */
     private void saveJplagReport(Project p) {
         File studentProjectsDir = new File(projectsPath);
         String idProject = Long.toString(p.getId());
@@ -125,6 +145,11 @@ public class ReportService {
         }
     }
 
+    /**
+     * Get Json Object from json file
+     * @param projectPath path to project
+     * @param idProject reference project id
+     */
     private JSONObject getIndividualJSONReport(String projectPath, String idProject) {
         File studentsProjectDir = new File(projectPath);
         for (File f : Objects.requireNonNull(studentsProjectDir.listFiles())) {
@@ -138,6 +163,10 @@ public class ReportService {
         throw new RuntimeException("unable to find json report in " + projectPath);
     }
 
+    /**
+     * Get all json objects from json report failes
+     * @param id reference project id
+     */
     private LinkedList<JSONObject> getIndividualJSONReports(long id) {
         LinkedList<JSONObject> jsons = new LinkedList<>();
         File globalProjectDir = new File(projectsPath + "/" + id);
@@ -156,6 +185,10 @@ public class ReportService {
         return jsons;
     }
 
+    /**
+     * Get project absolute path
+     * @param idProject reference project id
+     */
     public String getProjectPath(String idProject) {
         File projectsDir = new File(projectsPath);
         for (File f : Objects.requireNonNull(projectsDir.listFiles())) {
@@ -166,6 +199,10 @@ public class ReportService {
         throw new RuntimeException("Unable to find " + idProject + " in " + projectsPath);
     }
 
+    /**
+     * Delete student files after rating has ended
+     * @param idProject reference project id
+     */
     private void deleteFiles(String idProject) {
         File studentProjectsDir = new File(projectsPath);
         for (File f : Objects.requireNonNull(studentProjectsDir.listFiles())) {

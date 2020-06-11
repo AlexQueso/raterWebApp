@@ -27,6 +27,9 @@ public class AppController {
         this.appService = appService;
     }
 
+    /**
+     * Main page
+     */
     @GetMapping("/")
     public String home(Model model){
         List<Project> projects = appService.getAllProjects();
@@ -48,6 +51,10 @@ public class AppController {
         return "app";
     }
 
+    /**
+     * Project page
+     * @param id reference project id
+     */
     @GetMapping("/practica/{id}")
     public String projectOverview(@PathVariable long id, Model model){
         Project p = appService.getProjectById(id);
@@ -72,6 +79,9 @@ public class AppController {
         return "app";
     }
 
+    /**
+     * New project form page
+     */
     @GetMapping("/nueva-practica")
     public String newProject(Model model){
         model.addAttribute("new-project", true);
@@ -90,18 +100,36 @@ public class AppController {
         return "app";
     }
 
+    /**
+     * Upload new reference project file
+     * @param project project
+     * @param file new project file
+     * @return redirects to main page
+     */
     @PostMapping("/crear-practica")
     public String saveNewProject(Project project, @RequestParam("file") MultipartFile file){
         appService.createProject(project, file);
         return Utils.redirectTo("/");
     }
 
+    /**
+     * Upload new reference project file to update a existing project
+     * @param id reference project id
+     * @param file new project file
+     * @return redirect to main page
+     */
     @PostMapping("/updating-project/{id}")
     public String updatingProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
         appService.updateProject(id, file);
         return Utils.redirectTo("/");
     }
 
+    /**
+     * Upload student project
+     * @param id reference project ID
+     * @param file student project file
+     * @return redirect to report controller
+     */
     @PostMapping(value = "/rate-project/{id}")
     public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
         String studentProjectId = null;
@@ -119,6 +147,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Upload a set of projects
+     * @param id reference project ID
+     * @param file set of projects file
+     * @return redirect to report controller
+     */
     @PostMapping(value = "/rate-all-projects/{id}")
     public String rateAllProjects(@PathVariable long id, @RequestParam("file") MultipartFile file){
         try {
@@ -131,12 +165,21 @@ public class AppController {
         }
     }
 
+    /**
+     * Delete a existing project
+     * @param id reference project id
+     * @return redirects to main page
+     */
     @GetMapping("/delete-project/{id}")
     public String deleteProject(@PathVariable long id){
         appService.deleteProjectById(id);
         return Utils.redirectTo("/");
     }
 
+    /**
+     * Update project page
+     * @param id reference project id
+     */
     @GetMapping("/actualizar-practica/{id}")
     public String updateProject(@PathVariable long id, Model model){
         model.addAttribute("update-project", true);

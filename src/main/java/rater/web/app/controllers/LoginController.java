@@ -23,6 +23,9 @@ public class LoginController {
         this.loginService = loginService;
     }
 
+    /**
+     * Login page
+     */
     @GetMapping("/login")
     public String goToLogIn(Model model){
         model.addAttribute("login", true);
@@ -35,6 +38,12 @@ public class LoginController {
         return "app";
     }
 
+    /**
+     * sign in form, check credentials
+     * @param user user
+     * @param password password
+     * @return redirects to main page
+     */
     @PostMapping(value = "/signing-in")
     public String signIn(Model model, @RequestParam String user, @RequestParam String password) {
         if (loginService.signInSuccessfully(user, password)){
@@ -44,6 +53,11 @@ public class LoginController {
         return Utils.redirectTo("/login");
     }
 
+    /**
+     * Log out
+     * @param session httpsession
+     * @return redirects to main page
+     */
     @GetMapping("/log-out")
     public String logOut(HttpSession session){
         session.invalidate();

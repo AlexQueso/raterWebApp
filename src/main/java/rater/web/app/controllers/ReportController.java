@@ -29,6 +29,11 @@ public class ReportController {
         this.appService = appService;
     }
 
+    /**
+     * individual report page
+     * @param idReference reference project id
+     * @param idProject student project id
+     */
     @GetMapping("/report/{idReference}/{idProject}")
     public String reportStudent(Model model, @PathVariable long idReference, @PathVariable String idProject){
         Project p = appService.getProjectById(idReference);
@@ -55,6 +60,10 @@ public class ReportController {
         return "report";
     }
 
+    /**
+     * individual report page review
+     * @param idReference reference project id
+     */
     @GetMapping("/report/{idReference}")
     public String reviewReport(Model model, @PathVariable long idReference){
         Project p = appService.getProjectById(idReference);
@@ -79,6 +88,11 @@ public class ReportController {
         return "report";
     }
 
+    /**
+     * individual report page review from global report
+     * @param idReference reference project id
+     * @param studentName Student name
+     */
     @GetMapping("/individual-report/{idReference}/{studentName}")
     public String reviewIndividualReport(Model model, @PathVariable long idReference, @PathVariable String studentName){
         Project p = appService.getProjectById(idReference);
@@ -105,6 +119,10 @@ public class ReportController {
         return "report";
     }
 
+    /**
+     * Global report
+     * @param id reference project id
+     */
     @GetMapping("/report-global/{id}")
     public String reportGlobal(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
@@ -133,6 +151,10 @@ public class ReportController {
         return "report";
     }
 
+    /**
+     * Global report review
+     * @param id reference project id
+     */
     @GetMapping("/review-global-report/{id}")
     public String reportGlobalReview(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
@@ -161,6 +183,10 @@ public class ReportController {
         return "report";
     }
 
+    /**
+     * Download Jplag report
+     * @param id reference project id
+     */
     @GetMapping("/download-jplag/{id}")
     public void downloadJplagReport(@PathVariable long id, HttpServletResponse response) {
         try {
@@ -170,6 +196,10 @@ public class ReportController {
         }
     }
 
+    /**
+     * Download student src files
+     * @param id report id
+     */
     @GetMapping("/download-src/{id}")
     public void downloadSrc(@PathVariable long id, HttpServletResponse response){
         try {

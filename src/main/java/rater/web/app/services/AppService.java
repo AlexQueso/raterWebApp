@@ -34,18 +34,33 @@ public class AppService {
         this.projectRepository = projectRepository;
     }
 
+    /**
+     * check if current user has signed in
+     * @return true if user is a professor
+     */
     public boolean userIsProfessor() {
         return userSession.isProfessor();
     }
 
+    /**
+     * Get all projects from database
+     */
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
 
+    /**
+     * Get a project ny Id from database
+     * @param id project id
+     */
     public Project getProjectById(long id) {
         return projectRepository.findById(id);
     }
 
+    /**
+     * delete project in database by id
+     * @param id project Id
+     */
     public void deleteProjectById(long id) {
         Project p = getProjectById(id);
         if (p.getPathToDirectory() != null)
@@ -55,6 +70,12 @@ public class AppService {
         projectRepository.deleteById(id);
     }
 
+    /**
+     * Upload a project file
+     * @param id project id
+     * @param file uploaded file
+     * @return uploaded project file name
+     */
     public String uploadProject(long id, MultipartFile file) throws IOException {
         byte[] bytes = file.getBytes();
         String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime();
@@ -76,20 +97,38 @@ public class AppService {
         return projectUpdloadedId;
     }
 
+    /**
+     * Upload a set of projects
+     * @param id reference project id
+     * @param file projects zipped file
+     */
     public void uploadProjectSet(long id, MultipartFile file) throws IOException {
         byte[] bytes = file.getBytes();
         Path path = Paths.get(projectsPath + "/" + id + ".zip");
         Files.write(path, bytes);
     }
 
-    public boolean reportAlreadyExists(String key) {
-        return userSession.getStudentReports().get(key) != null;
+    /**
+     * check if there's already a idividual report for a specefic reference projet
+     * @param id reference project id
+     */
+    public boolean reportAlreadyExists(String id) {
+        return userSession.getStudentReports().get(id) != null;
     }
 
+    /**
+     * check if there's already a global report for a specefic reference projet
+     * @param p project
+     */
     public boolean globalReportAlreadyExists(Project p) {
         return userSession.getGlobalReports().get(Long.toString(p.getId())) != null;
     }
 
+    /**
+     * Create a new project from a n auploaded file
+     * @param p project
+     * @param file uploaded file
+     */
     public void createProject(Project p, MultipartFile file) {
         projectRepository.save(p);
         long id = p.getId();
@@ -116,6 +155,11 @@ public class AppService {
         }
     }
 
+    /**
+     * Update a project reference file from an uploaded file
+     * @param id project id
+     * @param file uploaded file
+     */
     public void updateProject(long id, MultipartFile file) {
         Project p = getProjectById(id);
         Path path = Paths.get(referencesPath + "/" + id + "_" + userSession.hashCode() + ".zip");
@@ -140,6 +184,10 @@ public class AppService {
         }
     }
 
+    /**
+     * replace NetBeans project files when uploading a new project
+     * @param referenceProjectDir reference project file
+     */
     private void replaceNbProjectFiles(File referenceProjectDir) {
         String pathToBuildProperties = referenceProjectDir.getAbsolutePath() + "/nbproject/private/private.properties";
         File f = new File(pathToBuildProperties);
@@ -165,6 +213,11 @@ public class AppService {
         }
     }
 
+    /**
+     * check reference project structure
+     * @param file reference project directorby
+     * @return true if project structure is fine
+     */
     private boolean checkReferenceProjectFiles(File file){
         int aux = 0;
 
@@ -176,6 +229,11 @@ public class AppService {
         return aux == 4;
     }
 
+    /**
+     * check student project structure
+     * @param file student project directory
+     * @return true if there's a src directory
+     */
     private boolean checkStudentProjectFiles(File file){
         for(File f: Objects.requireNonNull(file.listFiles()))
             if (f.getName().equals("src"))
