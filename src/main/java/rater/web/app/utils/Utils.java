@@ -13,12 +13,20 @@ import java.util.Objects;
 
 public class Utils {
 
+    /**
+     * Redirect to a specific uri
+     */
     public static String redirectTo(String url) {
         return "redirect:" + url;
     }
 
+    /**
+     * Zip directoru
+     * @param dir directory to zip
+     * @param destination destination of the zipped file
+     * @return zipped file
+     */
     public static File zipDirectory(File dir, File destination){
-        //check before zipping
         for (File f: Objects.requireNonNull(dir.listFiles()))
             if (f.getName().equals(destination.getName()))
                 Utils.deleteFile(f);
@@ -40,6 +48,12 @@ public class Utils {
         return destination;
     }
 
+    /**
+     * Unzip directory
+     * @param zippedFile zipped file
+     * @param destination destination of the unzipped directoru
+     * @return unzipped directory
+     */
     public static File unzipDirectory(File zippedFile, File destination) throws IOException, InterruptedException {
         String unzippedFileName = zippedFile.getName().replace(".zip", "");
         //check before unzipping
@@ -65,6 +79,11 @@ public class Utils {
         return unzippedFile;
     }
 
+    /**
+     * Parse file into a JSONObject object
+     * @param file file
+     * @return JSONOBject object
+     */
     public static JSONObject fileToJSONObject(File file) {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
@@ -77,6 +96,10 @@ public class Utils {
         return jsonObject;
     }
 
+    /**
+     * delete directory
+     * @param f directory
+     */
     public static void deleteDirectory(File f){
         try {
             FileUtils.deleteDirectory(f);
@@ -85,6 +108,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Create a file
+     * @param file fiale
+     */
     public static void mkdir(File file){
         try {
             FileUtils.forceMkdir(file);
@@ -93,6 +120,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Delete file
+     * @param file dile
+     */
     public static void deleteFile(File file){
         try {
             FileUtils.forceDelete(file);

@@ -67,7 +67,7 @@ public class ReportController {
     @GetMapping("/report/{idReference}")
     public String reviewReport(Model model, @PathVariable long idReference){
         Project p = appService.getProjectById(idReference);
-        Report report = reportService.getReportFromUserSession(p, idReference);
+        Report report = reportService.getReportFromUserSession(p);
         reportService.fillModelwithStudentRepor(model, report);
 
         model.addAttribute("id-project", p.getId());

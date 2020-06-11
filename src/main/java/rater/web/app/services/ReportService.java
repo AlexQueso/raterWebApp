@@ -216,6 +216,11 @@ public class ReportService {
         }
     }
 
+    /**
+     * Process JsonObject to generate a Report object
+     * @param json JsonObjectobject
+     * @return generated report
+     */
     public Report processJsonIndividualProject(JSONObject json) {
         Report r = new Report();
         r.setProjectName(((String) json.get("projectName")).replace("_", " "));
@@ -272,14 +277,29 @@ public class ReportService {
         return r;
     }
 
+    /**
+     * Save individual report in user session so it's accesible during the httpSession lenght
+     * @param p project
+     * @param report report
+     */
     public void saveReportInUserSession(Project p, Report report) {
         userSession.getStudentReports().put(p.getName(), report);
     }
 
-    public Report getReportFromUserSession(Project p, long idReference) {
+    /**
+     * Get individual report stored in userSession
+     * @param p project
+     * @return stored report
+     */
+    public Report getReportFromUserSession(Project p) {
         return userSession.getStudentReports().get(p.getName());
     }
 
+    /**
+     * Fill model with data from an inidvidual report
+     * @param model model
+     * @param report report
+     */
     public void fillModelwithStudentRepor(Model model, Report report) {
         model.addAttribute("individual-report", true);
         //header
@@ -297,6 +317,14 @@ public class ReportService {
             model.addAttribute("tests", report.getTests());
     }
 
+    /**
+     * Execute rater.jar
+     * @param option project o directory
+     * @param referencePath path to reference project
+     * @param projectPath path to student project(s)
+     * @param referenceName project name
+     * @param jplag path to jplag
+     */
     private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "java -jar " + jarPath + " " + option + " " + referencePath + " " +
@@ -319,6 +347,12 @@ public class ReportService {
         }
     }
 
+    /**
+     * Get individual report from database
+     * @param idReference reference project Id
+     * @param studentName student name
+     * @return stored report
+     */
     public Report getIndividualReport(long idReference, String studentName) {
         List<Report> reports = appService.getProjectById(idReference).getReports();
         for (Report r : reports)
@@ -328,6 +362,10 @@ public class ReportService {
         throw new RuntimeException("Unable to find individual report: " + studentName);
     }
 
+    /**
+     * Download Jplg report
+     * @param id reference project id
+     */
     public HttpServletResponse downloadJplagReport(long id, HttpServletResponse response) throws IOException {
         byte[] initialFile = projectRepository.findById(id).getJplagReport();
         InputStream is = new ByteArrayInputStream(initialFile);
@@ -335,6 +373,10 @@ public class ReportService {
         return response;
     }
 
+    /**
+     * Download student src files
+     * @param idReport report id
+     */
     public HttpServletResponse downloadStudentSrc(long idReport, HttpServletResponse response) throws IOException {
         byte[] initialFile = reportRepository.findById(idReport).getSrcFile();
         InputStream is = new ByteArrayInputStream(initialFile);
@@ -342,6 +384,11 @@ public class ReportService {
         return response;
     }
 
+    /**
+     * Get global reports
+     * @param p project
+     * @return list of reports
+     */
     public List<Report> getGlobalReports(Project p) {
         return appService.getProjectById(p.getId()).getReports();
     }
