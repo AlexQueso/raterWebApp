@@ -53,7 +53,7 @@ public class Utils {
         Process process = processBuilder.start();
         int exitVal = process.waitFor();
         if (exitVal != 0)
-            throw new RuntimeException("Failure unzipping: " + zippedFile.getName());
+            throw new RuntimeException("Error durante la ejecucion del comando unzip: " + zippedFile.getName());
 
         File unzippedDirectory = new File(destination.getPath() + "/" + unzippedFileName);
         File unzippedFile = null;
@@ -100,4 +100,5 @@ public class Utils {
             e.printStackTrace();
         }
     }
+
 }

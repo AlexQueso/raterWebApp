@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import rater.web.app.classes.Project;
-import rater.web.app.classes.Report;
 import rater.web.app.repositories.ProjectRepository;
 import rater.web.app.session.UserSession;
 
@@ -48,4 +47,5 @@ public class LoginService {
         }
         return false;
     }
+
 }

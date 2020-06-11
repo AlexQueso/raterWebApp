@@ -78,15 +78,15 @@ public class ReportService {
 
     private void saveSrc(LinkedList<Report> reports, long id) {
         File globalProjectDir = new File(projectsPath + "/" + id);
-        for (File f: Objects.requireNonNull(globalProjectDir.listFiles())) {
+        for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
             if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
                 for (File studentProject : Objects.requireNonNull(f.listFiles())) {
-                    for (Report r: reports){
-                        if (studentProject.getName().contains(r.getStudentName().replace(" ", "_"))){
-                            for (File studentFile : Objects.requireNonNull(studentProject.listFiles())){
-                                if (studentFile.getName().equals("src")){
+                    for (Report r : reports) {
+                        if (studentProject.getName().contains(r.getStudentName().replace(" ", "_"))) {
+                            for (File studentFile : Objects.requireNonNull(studentProject.listFiles())) {
+                                if (studentFile.getName().equals("src")) {
                                     try {
-                                        File zipSrc = Utils.zipDirectory(studentFile, new File(studentFile.getPath()+".zip"));
+                                        File zipSrc = Utils.zipDirectory(studentFile, new File(studentFile.getPath() + ".zip"));
                                         byte[] bytes = Files.readAllBytes(zipSrc.toPath());
                                         r.setSrcFile(bytes);
                                         break;
@@ -109,8 +109,8 @@ public class ReportService {
         String idProject = Long.toString(p.getId());
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
             if (studentProject.getName().contains(idProject) && studentProject.isDirectory()) {
-                for (File jplagDir: Objects.requireNonNull(studentProject.listFiles())){
-                    if (jplagDir.getName().equals("Jplag")){
+                for (File jplagDir : Objects.requireNonNull(studentProject.listFiles())) {
+                    if (jplagDir.getName().equals("Jplag")) {
                         try {
                             File zipJplag = Utils.zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
                             byte[] bytes = Files.readAllBytes(zipJplag.toPath());
@@ -256,7 +256,7 @@ public class ReportService {
             model.addAttribute("tests", false);
             model.addAttribute("test-failure", true);
             model.addAttribute("test-failure-msg", report.getTests().get(0).getTestSuite());
-        }else
+        } else
             model.addAttribute("tests", report.getTests());
     }
 
@@ -308,4 +308,5 @@ public class ReportService {
     public List<Report> getGlobalReports(Project p) {
         return appService.getProjectById(p.getId()).getReports();
     }
+
 }

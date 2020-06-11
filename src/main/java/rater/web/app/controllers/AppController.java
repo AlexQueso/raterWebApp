@@ -16,7 +16,6 @@ import rater.web.app.utils.Utils;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 public class AppController {

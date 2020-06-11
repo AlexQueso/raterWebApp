@@ -4,9 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 import rater.web.app.classes.Report;
 
-import javax.transaction.Transactional;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -42,7 +40,6 @@ public class UserSession {
         this.studentReports = studentReports;
     }
 
-    @Transactional
     public HashMap<String, List<Report>> getGlobalReports() {
         return globalReports;
     }

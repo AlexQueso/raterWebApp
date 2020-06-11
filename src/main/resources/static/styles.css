@@ -15,17 +15,6 @@
   line-height: 80px;
 }
 
-body {
-    margin-bottom:50px;
-}
-
-footer {
-    position: fixed;
-    height: 5%;
-    bottom: 0;
-    width: 100%;
-    margin-bottom: 10px;
-}
 /*button go-to-login*/
 #go-to-login {
     /*line-height: 35px;*/

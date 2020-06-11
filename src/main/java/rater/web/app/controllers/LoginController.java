@@ -49,4 +49,5 @@ public class LoginController {
         session.invalidate();
         return Utils.redirectTo("/");
     }
+
 }

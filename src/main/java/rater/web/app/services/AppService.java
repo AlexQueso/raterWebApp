@@ -14,8 +14,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class AppService {
@@ -79,9 +78,30 @@ public class AppService {
         return userSession.getGlobalReports().get(Long.toString(p.getId())) != null;
     }
 
-    public void createProject(Project project, MultipartFile file) {
-        projectRepository.save(project);
-        setReferenceProject(project, file);
+    public void createProject(Project p, MultipartFile file) {
+        projectRepository.save(p);
+        long id = p.getId();
+        Path path = Paths.get(referencesPath + "/" + id + ".zip");
+        File zippedProject = path.toFile();
+        try {
+            byte[] bytes = file.getBytes();
+            Files.write(path, bytes);
+            File referenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
+            if (checkReferenceProject(referenceProjectDir)){
+                p.setReferenceFile(bytes);
+                replaceNbProjectFiles(referenceProjectDir);
+                p.setPathToDirectory(referenceProjectDir);
+                projectRepository.save(p);
+            } else {
+                System.err.println("No se ha guardado la práctica " + p.getName() + ". Error de formato");
+                Utils.deleteDirectory(referenceProjectDir.getParentFile());
+                projectRepository.deleteById(id);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            Utils.deleteFile(zippedProject);
+        }
     }
 
     private void setReferenceProject(Project p, MultipartFile file) {
@@ -91,11 +111,19 @@ public class AppService {
         try {
             byte[] bytes = file.getBytes();
             Files.write(path, bytes);
-            p.setReferenceFile(bytes);
             File referenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
-            replaceNbProjectFiles(referenceProjectDir);
-            p.setPathToDirectory(referenceProjectDir);
-            projectRepository.save(p);
+            if (checkReferenceProject(referenceProjectDir)){
+                p.setReferenceFile(bytes);
+                replaceNbProjectFiles(referenceProjectDir);
+                p.setPathToDirectory(referenceProjectDir);
+                projectRepository.save(p);
+            } else {
+                System.err.println("No se ha guardado la práctica " + p.getName() + ". Error de formato");
+                Utils.deleteDirectory(referenceProjectDir.getParentFile());
+                projectRepository.deleteById(id);
+                throw new RuntimeException("Formato de proyecto invalido, falta uno de los siguientes ficheros o " +
+                        "directorios: build, nbproject, test, build.xml");
+            }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -136,29 +164,14 @@ public class AppService {
         }
     }
 
-//    private File unzipReferenceProject(File zippedFile, File destination) {
-//        File unzippedFile = null;
-//        String unzippedFileName = zippedFile.getName().replace(".zip", "");
-//        ProcessBuilder processBuilder = new ProcessBuilder();
-//        processBuilder.command("bash", "-c", "unzip " + zippedFile.getAbsolutePath() + " -d " +
-//                destination.getAbsolutePath() + "/" + unzippedFileName);
-//        try {
-//            Process process = processBuilder.start();
-//            int exitVal = process.waitFor();
-//            if (exitVal != 0)
-//                throw new RuntimeException("Failure unzipping: " + zippedFile.getName());
-//
-//            unzippedFile = new File(destination.getPath() + "/" + unzippedFileName);
-//            File[] files = unzippedFile.listFiles();
-//            for (File f : Objects.requireNonNull(files)) {
-//                return f;
-//            }
-//
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//            System.err.println("Failure unzipping: " + zippedFile.getName());
-//        }
-//        return unzippedFile;
-//    }
+    private boolean checkReferenceProject(File file){
+        int aux = 0;
 
+        for (File f: Objects.requireNonNull(file.listFiles()))
+            if (f.getName().equals("build") || f.getName().equals("build.xml") || f.getName().equals("test") ||
+                    f.getName().equals("nbproject"))
+                aux ++;
+
+        return aux == 4;
+    }
 }
