@@ -107,9 +107,13 @@ public class AppController {
         String studentProjectId = null;
         try {
             studentProjectId = appService.uploadProject(id, file);
-            return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
+            if (studentProjectId!=null){
+                return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
+            } else {
+                return Utils.redirectTo("/practica/" + id);
+            }
         } catch (IOException e) {
-            System.err.println("Problem while uploading student project files");
+            System.err.println("Error subiendo proyecto de alumno");
             e.printStackTrace();
             return Utils.redirectTo("/practica/" + id);
         }

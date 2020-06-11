@@ -59,7 +59,20 @@ public class AppService {
         byte[] bytes = file.getBytes();
         String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime();
         Path path = Paths.get(projectsPath + "/" + projectUpdloadedId + ".zip");
+        File zippedProject = path.toFile();
         Files.write(path, bytes);
+        try {
+            File studentProjectDir = Utils.unzipDirectory(zippedProject, zippedProject.getParentFile());
+            if (!checkStudentProjectFiles(studentProjectDir)){
+                System.err.println("Formato de fichero erroneo en práctica de alumno, no se ha ejecutado la corrección");
+                projectUpdloadedId = null;
+                Utils.deleteFile(zippedProject);
+            }
+            Utils.deleteDirectory(studentProjectDir.getParentFile());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return projectUpdloadedId;
     }
 
@@ -161,5 +174,12 @@ public class AppService {
                 aux ++;
 
         return aux == 4;
+    }
+
+    private boolean checkStudentProjectFiles(File file){
+        for(File f: Objects.requireNonNull(file.listFiles()))
+            if (f.getName().equals("src"))
+                return true;
+        return false;
     }
 }
