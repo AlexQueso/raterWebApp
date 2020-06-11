@@ -1,6 +1,5 @@
 package rater.web.app.services;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -87,7 +86,7 @@ public class AppService {
             byte[] bytes = file.getBytes();
             Files.write(path, bytes);
             File referenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
-            if (checkReferenceProject(referenceProjectDir)){
+            if (checkReferenceProjectFiles(referenceProjectDir)){
                 p.setReferenceFile(bytes);
                 replaceNbProjectFiles(referenceProjectDir);
                 p.setPathToDirectory(referenceProjectDir);
@@ -96,33 +95,6 @@ public class AppService {
                 System.err.println("No se ha guardado la práctica " + p.getName() + ". Error de formato");
                 Utils.deleteDirectory(referenceProjectDir.getParentFile());
                 projectRepository.deleteById(id);
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            Utils.deleteFile(zippedProject);
-        }
-    }
-
-    private void setReferenceProject(Project p, MultipartFile file) {
-        long id = p.getId();
-        Path path = Paths.get(referencesPath + "/" + id + ".zip");
-        File zippedProject = path.toFile();
-        try {
-            byte[] bytes = file.getBytes();
-            Files.write(path, bytes);
-            File referenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
-            if (checkReferenceProject(referenceProjectDir)){
-                p.setReferenceFile(bytes);
-                replaceNbProjectFiles(referenceProjectDir);
-                p.setPathToDirectory(referenceProjectDir);
-                projectRepository.save(p);
-            } else {
-                System.err.println("No se ha guardado la práctica " + p.getName() + ". Error de formato");
-                Utils.deleteDirectory(referenceProjectDir.getParentFile());
-                projectRepository.deleteById(id);
-                throw new RuntimeException("Formato de proyecto invalido, falta uno de los siguientes ficheros o " +
-                        "directorios: build, nbproject, test, build.xml");
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -133,10 +105,26 @@ public class AppService {
 
     public void updateProject(long id, MultipartFile file) {
         Project p = getProjectById(id);
-        if (p.getPathToDirectory() != null)
-            if (p.getPathToDirectory().exists())
+        Path path = Paths.get(referencesPath + "/" + id + "_" + userSession.hashCode() + ".zip");
+        File zippedProject = path.toFile();
+        try {
+            byte[] bytes = file.getBytes();
+            Files.write(path, bytes);
+            File newReferenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
+            if (checkReferenceProjectFiles(newReferenceProjectDir)) {
+                p.setReferenceFile(bytes);
+                replaceNbProjectFiles(newReferenceProjectDir);
                 Utils.deleteDirectory(p.getPathToDirectory().getParentFile());
-        setReferenceProject(p, file);
+                newReferenceProjectDir.getParentFile().renameTo(p.getPathToDirectory().getParentFile());
+                projectRepository.save(p);
+            } else {
+                Utils.deleteDirectory(newReferenceProjectDir.getParentFile());
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            Utils.deleteFile(zippedProject);
+        }
     }
 
     private void replaceNbProjectFiles(File referenceProjectDir) {
@@ -164,7 +152,7 @@ public class AppService {
         }
     }
 
-    private boolean checkReferenceProject(File file){
+    private boolean checkReferenceProjectFiles(File file){
         int aux = 0;
 
         for (File f: Objects.requireNonNull(file.listFiles()))
