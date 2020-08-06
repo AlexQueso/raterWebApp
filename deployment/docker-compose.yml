@@ -4,7 +4,6 @@ networks:
     rater-web-net:
 
 services:
-
     mysql-database:
         container_name: rater-web-db
         image: mysql:8.0.19
@@ -20,3 +19,17 @@ services:
             - rater-web-net
         volumes:
             - ./data:/var/lib/mysql
+
+    spring-app:
+        build: ./App
+        ports:
+            - "8080"
+        networks:
+            - "rater-web-net"
+        restart: always
+        depends_on:
+            - mysql-database
+        volumes:
+            - ${projects_path}:/webapp/students
+            - ${references_path}:/webapp/references
+            - ${jplag_dir}:/webapp/jplag
