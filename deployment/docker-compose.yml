@@ -1,35 +1,41 @@
-version: '3'
-
-networks:
-    rater-web-net:
+version: '2.1'
 
 services:
-    mysql-database:
-        container_name: rater-web-db
-        image: mysql:8.0.19
+    mysql:
+        image: mysql:latest
         environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-        restart: always
+            MYSQL_ROOT_PASSWORD: 1234
+            MYSQL_DATABASE: rater-web-db
+            MYSQL_USER: root
+            MYSQL_PASSWORD: 1234
         ports:
-            - "0.0.0.0:3308:3306"
-        networks:
-            - rater-web-net
+            - "3306:3306"
         volumes:
             - ./data:/var/lib/mysql
-
-    spring-app:
+        networks: 
+            jrater-network:
+                aliases:
+                    - jrater-db
+        healthcheck:
+            test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+                  
+    jrater-spring:
         build: ./App
         ports:
-            - "8080"
-        networks:
-            - "rater-web-net"
-        restart: always
+            - "8080:8080"
         depends_on:
-            - mysql-database
+            mysql:
+                condition: service_healthy
+        links:
+            - mysql
         volumes:
             - ${projects_path}:/webapp/students
             - ${references_path}:/webapp/references
             - ${jplag_dir}:/webapp/jplag
+        networks: 
+            jrater-network:
+                aliases: 
+                    - jrater-app
+
+networks: 
+    jrater-network:

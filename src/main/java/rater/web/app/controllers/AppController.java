@@ -132,9 +132,8 @@ public class AppController {
      */
     @PostMapping(value = "/rate-project/{id}")
     public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
-        String studentProjectId = null;
         try {
-            studentProjectId = appService.uploadProject(id, file);
+            String studentProjectId = appService.uploadProject(id, file);
             if (studentProjectId!=null){
                 return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
             } else {
