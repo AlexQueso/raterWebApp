@@ -12,13 +12,13 @@ services:
             - "3306:3306"
         volumes:
             - ./data:/var/lib/mysql
-        networks: 
+        networks:
             jrater-network:
                 aliases:
                     - jrater-db
         healthcheck:
             test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
-                  
+
     jrater-spring:
         build: ./App
         ports:
@@ -32,10 +32,10 @@ services:
             - ${projects_path}:/webapp/students
             - ${references_path}:/webapp/references
             - ${jplag_dir}:/webapp/jplag
-        networks: 
+        networks:
             jrater-network:
-                aliases: 
+                aliases:
                     - jrater-app
 
-networks: 
+networks:
     jrater-network:

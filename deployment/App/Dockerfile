@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:11
 
 WORKDIR /webapp
 
@@ -6,6 +6,7 @@ COPY WJRater.jar /webapp/app.jar
 COPY JRater.jar /webapp/jrater.jar
 COPY JPlag.jar /webapp/jplag.jar
 COPY build.properties /webapp/build.properties
+COPY netbeans /snap/netbeans/24/netbeans/
 
 EXPOSE 8080
 
@@ -15,7 +16,7 @@ RUN apt-get install -y zip unzip ant
 CMD ["java" , "-jar", "app.jar", \
     "--spring.mustache.suffix=.html", \
     "--spring.mustache.cache=false", \
-    "--spring.jpa.hibernate.ddl-auto=create-drop", \
+    "--spring.jpa.hibernate.ddl-auto=update", \
     "--spring.jpa.open-in-view=true", \
     "--spring.datasource.url=jdbc:mysql://mysql:3306/rater-web-db?useSSL=false&allowPublicKeyRetrieval=true", \
     "--spring.datasource.username=root", \
