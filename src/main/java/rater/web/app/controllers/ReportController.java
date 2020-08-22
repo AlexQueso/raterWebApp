@@ -11,6 +11,7 @@ import rater.web.app.classes.Project;
 import rater.web.app.classes.Report;
 import rater.web.app.services.AppService;
 import rater.web.app.services.ReportService;
+import rater.web.app.utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,7 +38,12 @@ public class ReportController {
     @GetMapping("/report/{idReference}/{idProject}")
     public String reportStudent(Model model, @PathVariable long idReference, @PathVariable String idProject){
         Project p = appService.getProjectById(idReference);
-        JSONObject jsonReport = reportService.rateStudentProject(idReference, idProject);
+        JSONObject jsonReport = null;
+        try {
+            jsonReport = reportService.rateStudentProject(idReference, idProject);
+        } catch (InterruptedException e) {
+            System.err.println("Error ejecutando JRater para  el proyecto con id " + idReference + ": " + e.getMessage());
+        }
         Report report = reportService.processJsonIndividualProject(jsonReport);
         reportService.saveReportInUserSession(p, report);
         reportService.fillModelwithStudentRepor(model, report);
@@ -126,7 +132,13 @@ public class ReportController {
     @GetMapping("/report-global/{id}")
     public String reportGlobal(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
-        LinkedList<Report> reports = reportService.rateAllStudentProjects(p);
+        LinkedList<Report> reports = null;
+        try {
+            reports = reportService.rateAllStudentProjects(p);
+        } catch (InterruptedException e) {
+            System.err.println("Error ejecutando JRater para un conjunto de proyectos:" + e.getMessage());
+            return Utils.redirectTo("/");
+        }
 
         model.addAttribute("global-report", true);
         model.addAttribute("project-name", p.getName());

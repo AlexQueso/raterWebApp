@@ -51,7 +51,7 @@ public class ReportService {
      * @param idProject student project id
      * @return Json report
      */
-    public JSONObject rateStudentProject(long idReference, String idProject) {
+    public JSONObject rateStudentProject(long idReference, String idProject) throws InterruptedException {
         Project p = appService.getProjectById(idReference);
         String referencePath = p.getPathToDirectory().getAbsolutePath();
         String projectPath = getProjectPath(idProject);
@@ -67,7 +67,7 @@ public class ReportService {
      * @param p reference project
      * @return json report list
      */
-    public LinkedList<Report> rateAllStudentProjects(Project p) {
+    public LinkedList<Report> rateAllStudentProjects(Project p) throws InterruptedException {
         String referencePath = p.getPathToDirectory().getAbsolutePath();
         String projectPath = getProjectPath(Long.toString(p.getId()));
         String referenceName = p.getName().replace(" ", "_");
@@ -107,7 +107,7 @@ public class ReportService {
                                         r.setSrcFile(bytes);
                                         break;
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        System.err.println(e.getMessage());
                                     }
                                 }
                             }
@@ -137,7 +137,7 @@ public class ReportService {
                             p.setJplagReport(bytes);
                             break;
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            System.err.println(e.getMessage());
                         }
                     }
                 }
@@ -325,7 +325,7 @@ public class ReportService {
      * @param referenceName project name
      * @param jplag path to jplag
      */
-    private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag) {
+    private void executeRater(String option, String referencePath, String projectPath, String referenceName, String jplag) throws InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", "java -jar " + jarPath + " " + option + " " + referencePath + " " +
                 projectPath + " " + referenceName + " " + jplag);
@@ -342,8 +342,8 @@ public class ReportService {
             if (exitVal != 0)
                 throw new RuntimeException("rater.jar failure, unable to rate " + projectPath + " project");
 
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 

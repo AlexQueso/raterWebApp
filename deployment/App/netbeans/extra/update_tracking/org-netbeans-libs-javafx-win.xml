@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="org.netbeans.libs.javafx.win">
+    <module_version install_time="1582562553258" last="true" origin="installer" specification_version="13.2">
+        <file crc="2634565923" name="config/Modules/org-netbeans-libs-javafx-win.xml"/>
+        <file crc="414360450" name="modules/ext/javafx-base-13-win.jar"/>
+        <file crc="54030808" name="modules/ext/javafx-base-13-win.jar.external"/>
+        <file crc="3243990194" name="modules/ext/javafx-controls-13-win.jar"/>
+        <file crc="4210556163" name="modules/ext/javafx-controls-13-win.jar.external"/>
+        <file crc="651621548" name="modules/ext/javafx-graphics-13-win.jar"/>
+        <file crc="3290044254" name="modules/ext/javafx-graphics-13-win.jar.external"/>
+        <file crc="2392976199" name="modules/ext/javafx-media-13-win.jar"/>
+        <file crc="2468256265" name="modules/ext/javafx-media-13-win.jar.external"/>
+        <file crc="3322528332" name="modules/ext/javafx-swing-13-win.jar"/>
+        <file crc="2322651729" name="modules/ext/javafx-swing-13-win.jar.external"/>
+        <file crc="1813955042" name="modules/ext/javafx-web-13-win.jar"/>
+        <file crc="2911651386" name="modules/ext/javafx-web-13-win.jar.external"/>
+        <file crc="2616812196" name="modules/org-netbeans-libs-javafx-win.jar"/>
+    </module_version>
+</module>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="org.netbeans.libs.javafx.linux">
+    <module_version install_time="1582562547560" last="true" origin="installer" specification_version="13.2">
+        <file crc="680246276" name="config/Modules/org-netbeans-libs-javafx-linux.xml"/>
+        <file crc="2492020953" name="modules/ext/javafx-base-13-linux.jar"/>
+        <file crc="473686522" name="modules/ext/javafx-base-13-linux.jar.external"/>
+        <file crc="1135077984" name="modules/ext/javafx-controls-13-linux.jar"/>
+        <file crc="1459435625" name="modules/ext/javafx-controls-13-linux.jar.external"/>
+        <file crc="336589674" name="modules/ext/javafx-graphics-13-linux.jar"/>
+        <file crc="3819245400" name="modules/ext/javafx-graphics-13-linux.jar.external"/>
+        <file crc="1287643879" name="modules/ext/javafx-media-13-linux.jar"/>
+        <file crc="3453235941" name="modules/ext/javafx-media-13-linux.jar.external"/>
+        <file crc="2544041311" name="modules/ext/javafx-swing-13-linux.jar"/>
+        <file crc="2858059401" name="modules/ext/javafx-swing-13-linux.jar.external"/>
+        <file crc="1028977454" name="modules/ext/javafx-web-13-linux.jar"/>
+        <file crc="813873713" name="modules/ext/javafx-web-13-linux.jar.external"/>
+        <file crc="234088132" name="modules/org-netbeans-libs-javafx-linux.jar"/>
+    </module_version>
+</module>

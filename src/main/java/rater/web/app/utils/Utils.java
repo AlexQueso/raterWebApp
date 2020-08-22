@@ -42,7 +42,7 @@ public class Utils {
                 throw new RuntimeException("Failure zipping: " + dir.getPath());
 
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             System.err.println("Failure zipping: " + dir.getPath());
         }
         return destination;
@@ -91,7 +91,7 @@ public class Utils {
             jsonObject = (JSONObject) parser.parse(reader);
             System.out.println(jsonObject);
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         return jsonObject;
     }
@@ -116,7 +116,7 @@ public class Utils {
         try {
             FileUtils.forceMkdir(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ public class Utils {
         try {
             FileUtils.forceDelete(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 

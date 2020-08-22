@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="org.netbeans.modules.web.browser.api">
+    <module_version install_time="1582563121753" last="true" origin="installer" specification_version="1.52">
+        <file crc="2917176736" name="config/Modules/org-netbeans-modules-web-browser-api.xml"/>
+        <file crc="2996426861" name="modules/org-netbeans-modules-web-browser-api.jar"/>
+    </module_version>
+</module>

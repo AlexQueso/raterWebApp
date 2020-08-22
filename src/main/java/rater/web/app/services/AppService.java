@@ -36,6 +36,7 @@ public class AppService {
 
     /**
      * check if current user has signed in
+     *
      * @return true if user is a professor
      */
     public boolean userIsProfessor() {
@@ -51,6 +52,7 @@ public class AppService {
 
     /**
      * Get a project ny Id from database
+     *
      * @param id project id
      */
     public Project getProjectById(long id) {
@@ -59,6 +61,7 @@ public class AppService {
 
     /**
      * delete project in database by id
+     *
      * @param id project Id
      */
     public void deleteProjectById(long id) {
@@ -72,34 +75,36 @@ public class AppService {
 
     /**
      * Upload a project file
-     * @param id project id
+     *
+     * @param id   project id
      * @param file uploaded file
      * @return uploaded project file name
      */
-    public String uploadProject(long id, MultipartFile file) throws IOException {
+    public String uploadProject(long id, MultipartFile file) throws IOException, InterruptedException {
         byte[] bytes = file.getBytes();
-        String projectUpdloadedId = Math.abs(userSession.hashCode()) + "_" + System.nanoTime();
+        int userSessionHashCode = userSession.hashCode();
+        if (userSessionHashCode < 0)
+            userSessionHashCode = -userSessionHashCode;
+        String projectUpdloadedId = userSessionHashCode + "_" + System.nanoTime();
         Path path = Paths.get(projectsPath + "/" + projectUpdloadedId + ".zip");
         File zippedProject = path.toFile();
         Files.write(path, bytes);
-        try {
-            File studentProjectDir = Utils.unzipDirectory(zippedProject, zippedProject.getParentFile());
-            if (!checkStudentProjectFiles(studentProjectDir)){
-                System.err.println("Formato de fichero erroneo en práctica de alumno, no se ha ejecutado la corrección");
-                projectUpdloadedId = null;
-                Utils.deleteFile(zippedProject);
-            }
-            Utils.deleteDirectory(studentProjectDir.getParentFile());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        File studentProjectDir = Utils.unzipDirectory(zippedProject, zippedProject.getParentFile());
+        if (!checkStudentProjectFiles(studentProjectDir)) {
+            System.err.println("Formato de fichero erroneo en práctica de alumno, no se ha ejecutado la corrección");
+            projectUpdloadedId = null;
+            Utils.deleteFile(zippedProject);
         }
+        Utils.deleteDirectory(studentProjectDir.getParentFile());
 
         return projectUpdloadedId;
     }
 
     /**
      * Upload a set of projects
-     * @param id reference project id
+     *
+     * @param id   reference project id
      * @param file projects zipped file
      */
     public void uploadProjectSet(long id, MultipartFile file) throws IOException {
@@ -110,6 +115,7 @@ public class AppService {
 
     /**
      * check if there's already a idividual report for a specefic reference projet
+     *
      * @param id reference project id
      */
     public boolean reportAlreadyExists(String id) {
@@ -118,6 +124,7 @@ public class AppService {
 
     /**
      * check if there's already a global report for a specefic reference projet
+     *
      * @param p project
      */
     public boolean globalReportAlreadyExists(Project p) {
@@ -126,10 +133,11 @@ public class AppService {
 
     /**
      * Create a new project from a n auploaded file
-     * @param p project
+     *
+     * @param p    project
      * @param file uploaded file
      */
-    public void createProject(Project p, MultipartFile file) {
+    public void createProject(Project p, MultipartFile file) throws InterruptedException {
         projectRepository.save(p);
         long id = p.getId();
         Path path = Paths.get(referencesPath + "/" + id + ".zip");
@@ -138,7 +146,7 @@ public class AppService {
             byte[] bytes = file.getBytes();
             Files.write(path, bytes);
             File referenceProjectDir = Utils.unzipDirectory(zippedProject, new File(referencesPath));
-            if (checkReferenceProjectFiles(referenceProjectDir)){
+            if (checkReferenceProjectFiles(referenceProjectDir)) {
                 p.setReferenceFile(bytes);
                 replaceNbProjectFiles(referenceProjectDir);
                 p.setPathToDirectory(referenceProjectDir);
@@ -148,8 +156,8 @@ public class AppService {
                 Utils.deleteDirectory(referenceProjectDir.getParentFile());
                 projectRepository.deleteById(id);
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error creando el proyecto con id: " + p.getId() + " " + e.getMessage());
         } finally {
             Utils.deleteFile(zippedProject);
         }
@@ -157,10 +165,11 @@ public class AppService {
 
     /**
      * Update a project reference file from an uploaded file
-     * @param id project id
+     *
+     * @param id   project id
      * @param file uploaded file
      */
-    public void updateProject(long id, MultipartFile file) {
+    public void updateProject(long id, MultipartFile file) throws InterruptedException {
         Project p = getProjectById(id);
         Path path = Paths.get(referencesPath + "/" + id + "_" + userSession.hashCode() + ".zip");
         File zippedProject = path.toFile();
@@ -177,8 +186,8 @@ public class AppService {
             } else {
                 Utils.deleteDirectory(newReferenceProjectDir.getParentFile());
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         } finally {
             Utils.deleteFile(zippedProject);
         }
@@ -186,14 +195,15 @@ public class AppService {
 
     /**
      * replace NetBeans project files when uploading a new project
+     *
      * @param referenceProjectDir reference project file
      */
     private void replaceNbProjectFiles(File referenceProjectDir) {
         String pathToBuildProperties = referenceProjectDir.getAbsolutePath() + "/nbproject/private/private.properties";
         File f = new File(pathToBuildProperties);
         if (f.exists() && !f.isDirectory()) {
-            try {
-                BufferedReader file = new BufferedReader(new FileReader(f));
+            try (BufferedReader file = new BufferedReader(new FileReader(f));
+                 FileOutputStream fileOut = new FileOutputStream(f); ){
                 StringBuilder inputBuffer = new StringBuilder();
                 String line;
                 while ((line = file.readLine()) != null) {
@@ -202,11 +212,8 @@ public class AppService {
                     else
                         inputBuffer.append(line).append("\n");
                 }
-                file.close();
                 String inputStr = inputBuffer.toString();
-                FileOutputStream fileOut = new FileOutputStream(f);
                 fileOut.write(inputStr.getBytes());
-                fileOut.close();
             } catch (Exception e) {
                 System.err.println("Problem modifying file: " + pathToBuildProperties);
             }
@@ -215,27 +222,29 @@ public class AppService {
 
     /**
      * check reference project structure
+     *
      * @param file reference project directorby
      * @return true if project structure is fine
      */
-    private boolean checkReferenceProjectFiles(File file){
+    private boolean checkReferenceProjectFiles(File file) {
         int aux = 0;
 
-        for (File f: Objects.requireNonNull(file.listFiles()))
+        for (File f : Objects.requireNonNull(file.listFiles()))
             if (f.getName().equals("build") || f.getName().equals("build.xml") || f.getName().equals("test") ||
                     f.getName().equals("nbproject"))
-                aux ++;
+                aux++;
 
         return aux == 4;
     }
 
     /**
      * check student project structure
+     *
      * @param file student project directory
      * @return true if there's a src directory
      */
-    private boolean checkStudentProjectFiles(File file){
-        for(File f: Objects.requireNonNull(file.listFiles()))
+    private boolean checkStudentProjectFiles(File file) {
+        for (File f : Objects.requireNonNull(file.listFiles()))
             if (f.getName().equals("src"))
                 return true;
         return false;

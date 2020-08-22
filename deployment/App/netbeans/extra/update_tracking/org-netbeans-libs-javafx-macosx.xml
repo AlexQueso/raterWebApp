@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="org.netbeans.libs.javafx.macosx">
+    <module_version install_time="1582562550476" last="true" origin="installer" specification_version="13.2">
+        <file crc="1154540305" name="config/Modules/org-netbeans-libs-javafx-macosx.xml"/>
+        <file crc="2557569889" name="modules/ext/javafx-base-13-mac.jar"/>
+        <file crc="3393559938" name="modules/ext/javafx-base-13-mac.jar.external"/>
+        <file crc="1838405604" name="modules/ext/javafx-controls-13-mac.jar"/>
+        <file crc="95510371" name="modules/ext/javafx-controls-13-mac.jar.external"/>
+        <file crc="1786347828" name="modules/ext/javafx-graphics-13-mac.jar"/>
+        <file crc="1767419112" name="modules/ext/javafx-graphics-13-mac.jar.external"/>
+        <file crc="1123366205" name="modules/ext/javafx-media-13-mac.jar"/>
+        <file crc="1526339109" name="modules/ext/javafx-media-13-mac.jar.external"/>
+        <file crc="4273544274" name="modules/ext/javafx-swing-13-mac.jar"/>
+        <file crc="840138962" name="modules/ext/javafx-swing-13-mac.jar.external"/>
+        <file crc="115429231" name="modules/ext/javafx-web-13-mac.jar"/>
+        <file crc="1678057655" name="modules/ext/javafx-web-13-mac.jar.external"/>
+        <file crc="2040180572" name="modules/org-netbeans-libs-javafx-macosx.jar"/>
+    </module_version>
+</module>

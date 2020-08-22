@@ -1,6 +1,7 @@
 package rater.web.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import rater.web.app.classes.Project;
 import rater.web.app.services.AppService;
 import rater.web.app.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +23,9 @@ import java.util.List;
 public class AppController {
 
     public final AppService appService;
+
+    @Value("${projects.path}")
+    private String projectsPath;
 
     @Autowired
     public AppController(AppService appService) {
@@ -108,7 +113,12 @@ public class AppController {
      */
     @PostMapping("/crear-practica")
     public String saveNewProject(Project project, @RequestParam("file") MultipartFile file){
-        appService.createProject(project, file);
+        try {
+            appService.createProject(project, file);
+        } catch (InterruptedException e) {
+            System.err.println("Error creando nueva practica: "+ e.getMessage());
+            return Utils.redirectTo("/");
+        }
         return Utils.redirectTo("/");
     }
 
@@ -120,7 +130,12 @@ public class AppController {
      */
     @PostMapping("/updating-project/{id}")
     public String updatingProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
-        appService.updateProject(id, file);
+        try {
+            appService.updateProject(id, file);
+        } catch (InterruptedException e) {
+            System.err.println("Error actualizando practica: "+ e.getMessage());
+            return Utils.redirectTo("/");
+        }
         return Utils.redirectTo("/");
     }
 
@@ -132,8 +147,9 @@ public class AppController {
      */
     @PostMapping(value = "/rate-project/{id}")
     public String rateStudentProject(@PathVariable long id, @RequestParam("file") MultipartFile file){
+        String studentProjectId = "";
         try {
-            String studentProjectId = appService.uploadProject(id, file);
+            studentProjectId = appService.uploadProject(id, file);
             if (studentProjectId!=null){
                 return Utils.redirectTo("/report/" + id + "/" + studentProjectId);
             } else {
@@ -141,8 +157,12 @@ public class AppController {
             }
         } catch (IOException e) {
             System.err.println("Error subiendo proyecto de alumno");
-            e.printStackTrace();
             return Utils.redirectTo("/practica/" + id);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+            Utils.deleteDirectory(new File(projectsPath + "/" + studentProjectId));
+            Utils.deleteFile(new File(projectsPath + "/" + studentProjectId + ".zip"));
+            return Utils.redirectTo("/");
         }
     }
 
@@ -159,7 +179,6 @@ public class AppController {
             return Utils.redirectTo("/report-global/" + id);
         } catch (IOException e) {
             System.err.println("Problem while uploading a set of student projects");
-            e.printStackTrace();
             return Utils.redirectTo("/practica/" + id);
         }
     }
