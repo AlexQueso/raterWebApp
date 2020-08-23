@@ -92,7 +92,7 @@ public class ReportService {
      * @param reports report list
      * @param id reference project id
      */
-    private void saveSrc(LinkedList<Report> reports, long id) {
+    private void saveSrc(LinkedList<Report> reports, long id) throws InterruptedException {
         File globalProjectDir = new File(projectsPath + "/" + id);
         for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
             if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
@@ -124,7 +124,7 @@ public class ReportService {
      * save Jplag report in database
      * @param p reference project
      */
-    private void saveJplagReport(Project p) {
+    private void saveJplagReport(Project p) throws InterruptedException {
         File studentProjectsDir = new File(projectsPath);
         String idProject = Long.toString(p.getId());
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {

@@ -136,7 +136,7 @@ public class ReportController {
         try {
             reports = reportService.rateAllStudentProjects(p);
         } catch (InterruptedException e) {
-            System.err.println("Error ejecutando JRater para un conjunto de proyectos:" + e.getMessage());
+            System.err.println("Error autoevaluando un conjunto de proyectos:" + e.getMessage());
             return Utils.redirectTo("/");
         }
 

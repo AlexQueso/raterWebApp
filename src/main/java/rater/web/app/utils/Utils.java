@@ -26,7 +26,7 @@ public class Utils {
      * @param destination destination of the zipped file
      * @return zipped file
      */
-    public static File zipDirectory(File dir, File destination){
+    public static File zipDirectory(File dir, File destination) throws InterruptedException {
         for (File f: Objects.requireNonNull(dir.listFiles()))
             if (f.getName().equals(destination.getName()))
                 Utils.deleteFile(f);
@@ -41,7 +41,7 @@ public class Utils {
             if (!destination.exists())
                 throw new RuntimeException("Failure zipping: " + dir.getPath());
 
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
             System.err.println("Failure zipping: " + dir.getPath());
         }
@@ -74,7 +74,6 @@ public class Utils {
         File[] files = unzippedDirectory.listFiles();
         for (File f : Objects.requireNonNull(files)) {
             unzippedFile = f;
-            break;
         }
         return unzippedFile;
     }

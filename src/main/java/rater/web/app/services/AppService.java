@@ -181,7 +181,8 @@ public class AppService {
                 p.setReferenceFile(bytes);
                 replaceNbProjectFiles(newReferenceProjectDir);
                 Utils.deleteDirectory(p.getPathToDirectory().getParentFile());
-                newReferenceProjectDir.getParentFile().renameTo(p.getPathToDirectory().getParentFile());
+                if (!newReferenceProjectDir.getParentFile().renameTo(p.getPathToDirectory().getParentFile()))
+                    System.err.println("Error al renombrar el directorio padre del directorio del proyecto con id: " + p.getId());
                 projectRepository.save(p);
             } else {
                 Utils.deleteDirectory(newReferenceProjectDir.getParentFile());
