@@ -2,7 +2,6 @@ package rater.web.app.classes;
 
 import javax.persistence.*;
 import java.io.File;
-import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,9 @@ public class Project {
     @Column(length=524288) //500KB
     private byte[] jplagReport;
 
+    /**
+     * Contructor vacio para que Spring lo considere un Java Bean
+     */
     public Project(){}
 
     public Project (String name){

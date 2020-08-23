@@ -11,9 +11,12 @@ public class TestCase {
 
     @Column(length = 10000)
     private String trace;
-    private String Cause;
+    private String cause;
     private String testName;
 
+    /**
+     * Contructor vacio para que Spring lo considere un Java Bean
+     */
     public TestCase(){}
 
     public String getTrace() {
@@ -25,11 +28,11 @@ public class TestCase {
     }
 
     public String getCause() {
-        return Cause;
+        return cause;
     }
 
     public void setCause(String cause) {
-        Cause = cause;
+        this.cause = cause;
     }
 
     public String getTestName() {

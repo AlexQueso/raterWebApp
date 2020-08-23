@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import static rater.web.app.RaterWebAppApplication.LOGGER;
+
 @Component
 public class ReportService {
 
@@ -36,6 +38,9 @@ public class ReportService {
     private final AppService appService;
     private final ProjectRepository projectRepository;
     private final ReportRepository reportRepository;
+
+    private final String JPLAG = "Jplag";
+    private final String DANGER = "danger";
 
     @Autowired
     public ReportService(UserSession userSession, AppService appService, ProjectRepository projectRepository, ReportRepository reportRepository) {
@@ -95,7 +100,7 @@ public class ReportService {
     private void saveSrc(LinkedList<Report> reports, long id) throws InterruptedException {
         File globalProjectDir = new File(projectsPath + "/" + id);
         for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
-            if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
+            if (!(f.getName().equals(JPLAG)) && f.isDirectory()) {
                 for (File studentProject : Objects.requireNonNull(f.listFiles())) {
                     for (Report r : reports) {
                         if (studentProject.getName().contains(r.getStudentName().replace(" ", "_"))) {
@@ -107,7 +112,7 @@ public class ReportService {
                                         r.setSrcFile(bytes);
                                         break;
                                     } catch (IOException e) {
-                                        System.err.println(e.getMessage());
+                                        LOGGER.error(e.getMessage());
                                     }
                                 }
                             }
@@ -130,14 +135,14 @@ public class ReportService {
         for (File studentProject : Objects.requireNonNull(studentProjectsDir.listFiles())) {
             if (studentProject.getName().contains(idProject) && studentProject.isDirectory()) {
                 for (File jplagDir : Objects.requireNonNull(studentProject.listFiles())) {
-                    if (jplagDir.getName().equals("Jplag")) {
+                    if (jplagDir.getName().equals(JPLAG)) {
                         try {
                             File zipJplag = Utils.zipDirectory(jplagDir, new File(jplagDir.getPath() + ".zip"));
                             byte[] bytes = Files.readAllBytes(zipJplag.toPath());
                             p.setJplagReport(bytes);
                             break;
                         } catch (IOException e) {
-                            System.err.println(e.getMessage());
+                            LOGGER.error(e.getMessage());
                         }
                     }
                 }
@@ -171,7 +176,7 @@ public class ReportService {
         LinkedList<JSONObject> jsons = new LinkedList<>();
         File globalProjectDir = new File(projectsPath + "/" + id);
         for (File f : Objects.requireNonNull(globalProjectDir.listFiles())) {
-            if (!(f.getName().equals("Jplag")) && f.isDirectory()) {
+            if (!(f.getName().equals(JPLAG)) && f.isDirectory()) {
                 for (File studentProject : Objects.requireNonNull(f.listFiles())) {
                     for (File studentFile : Objects.requireNonNull(studentProject.listFiles())) {
                         if (studentFile.getName().equals("build_test_report.json")) {
@@ -233,7 +238,7 @@ public class ReportService {
         if (r.getBuild().contains("SUCCESS"))
             r.setBuildSuccess("success");
         else
-            r.setBuildSuccess("danger");
+            r.setBuildSuccess(DANGER);
 
         LinkedList<Test> testLinkedList = new LinkedList<>();
         if (json.get("test") instanceof JSONArray) {
@@ -247,7 +252,7 @@ public class ReportService {
                 if (test.getCorrect() == test.getTotal())
                     test.setSuccess("success");
                 else
-                    test.setSuccess("danger");
+                    test.setSuccess(DANGER);
 
                 if (test.getTotal() > test.getCorrect()) {
                     LinkedList<TestCase> testCasesLinkedList = new LinkedList<>();
@@ -269,7 +274,7 @@ public class ReportService {
             Test test = new Test();
             test.setTotal(-1);
             test.setCorrect(0);
-            test.setSuccess("danger");
+            test.setSuccess(DANGER);
             test.setTestSuite((String) json.get("test"));
             testLinkedList.add(test);
         }
@@ -343,7 +348,7 @@ public class ReportService {
                 throw new RuntimeException("rater.jar failure, unable to rate " + projectPath + " project");
 
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 

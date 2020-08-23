@@ -17,12 +17,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import static rater.web.app.RaterWebAppApplication.LOGGER;
 
 @Controller
 public class ReportController {
 
     public final ReportService reportService;
     public final AppService appService;
+
+    private final String ID_PROJECT = "id-project";
+    private final String PROFESSOR = "professor";
+    private final String STUDENT = "student";
+    private final String INICIO = "Inicio";
+    private final String BREADCRUMB_LIST = "breadcrumb-list";
+    private final String BREADCRUMB_ACTIVE = "breadcrumb-active";
+    private final String REPORT = "report";
+    private final String NEW_PROJECT_BTN = "new-project-btn";
+    private final String PRACTICA = "/practica/";
+    private final String CORRECCION_GLOBAL = "Corrección Global";
 
     @Autowired
     public ReportController(ReportService reportService, AppService appService) {
@@ -42,28 +56,29 @@ public class ReportController {
         try {
             jsonReport = reportService.rateStudentProject(idReference, idProject);
         } catch (InterruptedException e) {
-            System.err.println("Error ejecutando JRater para  el proyecto con id " + idReference + ": " + e.getMessage());
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
         }
-        Report report = reportService.processJsonIndividualProject(jsonReport);
+        Report report = reportService.processJsonIndividualProject(Objects.requireNonNull(jsonReport));
         reportService.saveReportInUserSession(p, report);
         reportService.fillModelwithStudentRepor(model, report);
 
-        model.addAttribute("id-project", p.getId());
+        model.addAttribute(ID_PROJECT, p.getId());
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
-            model.addAttribute("new-project-btn", true);
+            model.addAttribute(PROFESSOR, true);
+            model.addAttribute(NEW_PROJECT_BTN, true);
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrección");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), PRACTICA +idReference));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, "Corrección");
 
-        return "report";
+        return REPORT;
     }
 
     /**
@@ -76,22 +91,22 @@ public class ReportController {
         Report report = reportService.getReportFromUserSession(p);
         reportService.fillModelwithStudentRepor(model, report);
 
-        model.addAttribute("id-project", p.getId());
+        model.addAttribute(ID_PROJECT, p.getId());
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
-            model.addAttribute("new-project-btn", true);
+            model.addAttribute(PROFESSOR, true);
+            model.addAttribute(NEW_PROJECT_BTN, true);
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrección");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), PRACTICA +idReference));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, "Corrección");
 
-        return "report";
+        return REPORT;
     }
 
     /**
@@ -105,24 +120,24 @@ public class ReportController {
         Report report = reportService.getIndividualReport(idReference, studentName);
         reportService.fillModelwithStudentRepor(model, report);
 
-        model.addAttribute("id-project", p.getId());
+        model.addAttribute(ID_PROJECT, p.getId());
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
-            model.addAttribute("new-project-btn", true);
+            model.addAttribute(PROFESSOR, true);
+            model.addAttribute(NEW_PROJECT_BTN, true);
             model.addAttribute("id-report", report.getId());
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +idReference));
-        breadcrumbs.add(new Breadcrumb("Corrección Global", "/review-global-report/" + idReference));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", report.getStudentName());
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), PRACTICA +idReference));
+        breadcrumbs.add(new Breadcrumb(CORRECCION_GLOBAL, "/review-global-report/" + idReference));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, report.getStudentName());
 
-        return "report";
+        return REPORT;
     }
 
     /**
@@ -132,11 +147,12 @@ public class ReportController {
     @GetMapping("/report-global/{id}")
     public String reportGlobal(Model model, @PathVariable long id){
         Project p = appService.getProjectById(id);
-        LinkedList<Report> reports = null;
+        LinkedList<Report> reports;
         try {
             reports = reportService.rateAllStudentProjects(p);
         } catch (InterruptedException e) {
-            System.err.println("Error autoevaluando un conjunto de proyectos:" + e.getMessage());
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
             return Utils.redirectTo("/");
         }
 
@@ -145,22 +161,22 @@ public class ReportController {
         model.addAttribute("date", reports.getFirst().getDate());
         model.addAttribute("reports", reports);
 
-        model.addAttribute("id-project", p.getId());
+        model.addAttribute(ID_PROJECT, p.getId());
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
-            model.addAttribute("new-project-btn", true);
+            model.addAttribute(PROFESSOR, true);
+            model.addAttribute(NEW_PROJECT_BTN, true);
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" +id));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrección Global");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), PRACTICA +id));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, CORRECCION_GLOBAL);
 
-        return "report";
+        return REPORT;
     }
 
     /**
@@ -177,22 +193,22 @@ public class ReportController {
         model.addAttribute("date", reports.get(0).getDate());
         model.addAttribute("reports", reports);
 
-        model.addAttribute("id-project", p.getId());
+        model.addAttribute(ID_PROJECT, p.getId());
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
-            model.addAttribute("new-project-btn", true);
+            model.addAttribute(PROFESSOR, true);
+            model.addAttribute(NEW_PROJECT_BTN, true);
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        breadcrumbs.add(new Breadcrumb(p.getName(), "/practica/" + id));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Corrección Global");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        breadcrumbs.add(new Breadcrumb(p.getName(), PRACTICA + id));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, CORRECCION_GLOBAL);
 
-        return "report";
+        return REPORT;
     }
 
     /**
@@ -203,8 +219,8 @@ public class ReportController {
     public void downloadJplagReport(@PathVariable long id, HttpServletResponse response) {
         try {
             reportService.downloadJplagReport(id, response).flushBuffer();
-        } catch (IOException ex) {
-            throw new RuntimeException("IOError writing file to output stream");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -216,8 +232,8 @@ public class ReportController {
     public void downloadSrc(@PathVariable long id, HttpServletResponse response){
         try {
             reportService.downloadStudentSrc(id, response).flushBuffer();
-        } catch (IOException ex) {
-            throw new RuntimeException("IOError writing file to output stream");
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 

@@ -30,7 +30,6 @@ public class LoginService {
     public boolean signInSuccessfully(String user, String password) {
         if (user.equals(this.username) && password.equals(this.password)){
             userSession.setProfessor(true);
-            List<Project> projects = projectRepository.findAll();
             if (userSession.getGlobalReports() == null)
                 userSession.setGlobalReports(new HashMap<>());
             if (projectRepository.findAll()!=null) {

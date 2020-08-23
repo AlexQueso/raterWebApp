@@ -15,6 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static rater.web.app.RaterWebAppApplication.LOGGER;
+
 @Component
 public class AppService {
 
@@ -92,7 +94,7 @@ public class AppService {
 
         File studentProjectDir = Utils.unzipDirectory(zippedProject, zippedProject.getParentFile());
         if (!checkStudentProjectFiles(studentProjectDir)) {
-            System.err.println("Formato de fichero erroneo en práctica de alumno, no se ha ejecutado la corrección");
+            LOGGER.error("Formato de fichero erroneo en práctica de alumno, no se ha ejecutado la corrección");
             projectUpdloadedId = null;
             Utils.deleteFile(zippedProject);
         }
@@ -152,12 +154,12 @@ public class AppService {
                 p.setPathToDirectory(referenceProjectDir);
                 projectRepository.save(p);
             } else {
-                System.err.println("No se ha guardado la práctica " + p.getName() + ". Error de formato");
+                LOGGER.error("No se ha guardado la práctica " + p.getName() + ". Error de formato");
                 Utils.deleteDirectory(referenceProjectDir.getParentFile());
                 projectRepository.deleteById(id);
             }
         } catch (IOException e) {
-            System.err.println("Error creando el proyecto con id: " + p.getId() + " " + e.getMessage());
+            LOGGER.error(e.getMessage());
         } finally {
             Utils.deleteFile(zippedProject);
         }
@@ -182,13 +184,13 @@ public class AppService {
                 replaceNbProjectFiles(newReferenceProjectDir);
                 Utils.deleteDirectory(p.getPathToDirectory().getParentFile());
                 if (!newReferenceProjectDir.getParentFile().renameTo(p.getPathToDirectory().getParentFile()))
-                    System.err.println("Error al renombrar el directorio padre del directorio del proyecto con id: " + p.getId());
+                    LOGGER.error("Error al renombrar el directorio padre del directorio del proyecto con id: " + p.getId());
                 projectRepository.save(p);
             } else {
                 Utils.deleteDirectory(newReferenceProjectDir.getParentFile());
             }
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
         } finally {
             Utils.deleteFile(zippedProject);
         }
@@ -204,7 +206,7 @@ public class AppService {
         File f = new File(pathToBuildProperties);
         if (f.exists() && !f.isDirectory()) {
             try (BufferedReader file = new BufferedReader(new FileReader(f));
-                 FileOutputStream fileOut = new FileOutputStream(f); ){
+                 FileOutputStream fileOut = new FileOutputStream(f)){
                 StringBuilder inputBuffer = new StringBuilder();
                 String line;
                 while ((line = file.readLine()) != null) {
@@ -216,7 +218,7 @@ public class AppService {
                 String inputStr = inputBuffer.toString();
                 fileOut.write(inputStr.getBytes());
             } catch (Exception e) {
-                System.err.println("Problem modifying file: " + pathToBuildProperties);
+                LOGGER.error(e.getMessage());
             }
         }
     }

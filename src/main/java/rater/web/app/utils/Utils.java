@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Objects;
 
+import static rater.web.app.RaterWebAppApplication.LOGGER;
+
 public class Utils {
+
+    private static final String FAILURE_ZIPPING = "Failure zipping: ";
 
     /**
      * Redirect to a specific uri
@@ -37,13 +41,13 @@ public class Utils {
             Process process = processBuilder.start();
             int exitVal = process.waitFor();
             if (exitVal != 0)
-                throw new RuntimeException("Failure zipping: " + dir.getPath());
+                throw new RuntimeException(FAILURE_ZIPPING + dir.getPath());
             if (!destination.exists())
-                throw new RuntimeException("Failure zipping: " + dir.getPath());
+                throw new RuntimeException(FAILURE_ZIPPING + dir.getPath());
 
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.err.println("Failure zipping: " + dir.getPath());
+            LOGGER.error(e.getMessage());
+            System.err.println(FAILURE_ZIPPING + dir.getPath());
         }
         return destination;
     }
@@ -90,7 +94,7 @@ public class Utils {
             jsonObject = (JSONObject) parser.parse(reader);
             System.out.println(jsonObject);
         } catch (IOException | ParseException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
         return jsonObject;
     }
@@ -104,6 +108,7 @@ public class Utils {
             FileUtils.deleteDirectory(f);
         } catch (IOException e) {
             System.err.println("Problme deleting file: " + f.getPath());
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -115,7 +120,7 @@ public class Utils {
         try {
             FileUtils.forceMkdir(file);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
@@ -127,7 +132,7 @@ public class Utils {
         try {
             FileUtils.forceDelete(file);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 

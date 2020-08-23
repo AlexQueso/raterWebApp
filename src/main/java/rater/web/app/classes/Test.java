@@ -18,6 +18,9 @@ public class Test {
     private List<TestCase> testCases;
     private String success;
 
+    /**
+     * Contructor vacio para que Spring lo considere un Java Bean
+     */
     public Test() {
     }
 

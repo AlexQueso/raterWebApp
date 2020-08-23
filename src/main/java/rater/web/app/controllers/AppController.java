@@ -19,10 +19,18 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static rater.web.app.RaterWebAppApplication.LOGGER;
+
 @Controller
 public class AppController {
 
     public final AppService appService;
+
+    private static final String PROFESSOR = "professor";
+    private static final String STUDENT = "student";
+    private static final String INICIO = "Inicio";
+    private static final String BREADCRUMB_LIST = "breadcrumb-list";
+    private static final String BREADCRUMB_ACTIVE = "breadcrumb-active";
 
     @Value("${projects.path}")
     private String projectsPath;
@@ -42,16 +50,16 @@ public class AppController {
         model.addAttribute("main", true);
 
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
+            model.addAttribute(PROFESSOR, true);
             model.addAttribute("new-project-btn", true);
         }
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, "");
 
         return "app";
     }
@@ -66,11 +74,11 @@ public class AppController {
         model.addAttribute("project", p);
 
         if (appService.userIsProfessor()) {
-            model.addAttribute("professor", true);
+            model.addAttribute(PROFESSOR, true);
             if (appService.globalReportAlreadyExists(p))
                 model.addAttribute("view-report", true);
         }else {
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
             if (appService.reportAlreadyExists(p.getName())){
                 model.addAttribute("view-report", true);
             }
@@ -78,9 +86,9 @@ public class AppController {
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", p.getName());
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, p.getName());
         return "app";
     }
 
@@ -92,15 +100,15 @@ public class AppController {
         model.addAttribute("new-project", true);
 
         if (appService.userIsProfessor())
-            model.addAttribute("professor", true);
+            model.addAttribute(PROFESSOR, true);
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Nueva Práctica");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, "Nueva Práctica");
 
         return "app";
     }
@@ -116,7 +124,8 @@ public class AppController {
         try {
             appService.createProject(project, file);
         } catch (InterruptedException e) {
-            System.err.println("Error creando nueva practica: "+ e.getMessage());
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
             return Utils.redirectTo("/");
         }
         return Utils.redirectTo("/");
@@ -133,7 +142,8 @@ public class AppController {
         try {
             appService.updateProject(id, file);
         } catch (InterruptedException e) {
-            System.err.println("Error actualizando practica: "+ e.getMessage());
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
             return Utils.redirectTo("/");
         }
         return Utils.redirectTo("/");
@@ -156,10 +166,11 @@ public class AppController {
                 return Utils.redirectTo("/practica/" + id);
             }
         } catch (IOException e) {
-            System.err.println("Error subiendo proyecto de alumno");
+            LOGGER.error(e.getMessage());
             return Utils.redirectTo("/practica/" + id);
         } catch (InterruptedException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
             Utils.deleteDirectory(new File(projectsPath + "/" + studentProjectId));
             Utils.deleteFile(new File(projectsPath + "/" + studentProjectId + ".zip"));
             return Utils.redirectTo("/");
@@ -178,7 +189,7 @@ public class AppController {
             appService.uploadProjectSet(id, file);
             return Utils.redirectTo("/report-global/" + id);
         } catch (IOException e) {
-            System.err.println("Problem while uploading a set of student projects");
+            LOGGER.error(e.getMessage());
             return Utils.redirectTo("/practica/" + id);
         }
     }
@@ -204,15 +215,15 @@ public class AppController {
         model.addAttribute("id-project", id);
 
         if (appService.userIsProfessor())
-            model.addAttribute("professor", true);
+            model.addAttribute(PROFESSOR, true);
         else
-            model.addAttribute("student", true);
+            model.addAttribute(STUDENT, true);
 
         //breadcrumb
         LinkedList<Breadcrumb> breadcrumbs = new LinkedList<>();
-        breadcrumbs.add(new Breadcrumb("Inicio", "/"));
-        model.addAttribute("breadcrumb-list", breadcrumbs);
-        model.addAttribute("breadcrumb-active", "Actualizar Práctica");
+        breadcrumbs.add(new Breadcrumb(INICIO, "/"));
+        model.addAttribute(BREADCRUMB_LIST, breadcrumbs);
+        model.addAttribute(BREADCRUMB_ACTIVE, "Actualizar Práctica");
 
         return "app";
     }
